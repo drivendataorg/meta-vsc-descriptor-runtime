@@ -22,10 +22,10 @@ endif
 TAG = ${CPU_OR_GPU}-latest
 LOCAL_TAG = ${CPU_OR_GPU}-local
 
-REPO = drivendata/belugas-competition
-REGISTRY_IMAGE = boembelugas.azurecr.io/${REPO}:${TAG}
+REPO = drivendata/competition-meta-vsc
+REGISTRY_IMAGE = metavsc.azurecr.io/${REPO}:${TAG}
 LOCAL_IMAGE = ${REPO}:${LOCAL_TAG}
-CONTAINER_NAME = belugas-competition
+CONTAINER_NAME = competition-meta-vsc
 
 # if not TTY (for example GithubActions CI) no interactive tty commands for docker
 ifneq (true, ${GITHUB_ACTIONS_NO_TTY})
@@ -67,7 +67,7 @@ test-container: build _submission_write_perms
 ## Start your locally built container and open a bash shell within the running container; same as submission setup except has network access
 interact-container: build _submission_write_perms
 	docker run \
-		--mount type=bind,source="$(shell pwd)"/data,target=/code_execution/data,readonly \
+		--mount type=bind,source="$(shell pwd)"/data,target=/data,readonly \
 		--mount type=bind,source="$(shell pwd)"/submission,target=/code_execution/submission \
 		--shm-size 8g \
 		-it \
@@ -121,7 +121,7 @@ endif
 		${GPU_ARGS} \
 		${NETWORK_ARGS} \
 		--network none \
-		--mount type=bind,source="$(shell pwd)"/data,target=/code_execution/data,readonly \
+		--mount type=bind,source="$(shell pwd)"/data,target=/data,readonly \
 		--mount type=bind,source="$(shell pwd)"/submission,target=/code_execution/submission \
 		--shm-size 8g \
 		--name ${CONTAINER_NAME} \

@@ -1,10 +1,10 @@
-FROM nvidia/cuda:11.0.3-base-ubuntu20.04
+FROM nvidia/cuda:11.3.1-base-ubuntu20.04
 # adapated from build file for pangeo images
 # https://github.com/pangeo-data/pangeo-docker-images
 
 ARG CPU_OR_GPU=gpu
 
-ENV CONDA_VERSION=4.10.3-2 \
+ENV CONDA_VERSION=4.14.0-0 \
     CONDA_ENV=condaenv \
     RUNTIME_USER=appuser \
     RUNTIME_UID=1000 \
@@ -22,6 +22,7 @@ ENV NB_PYTHON_PREFIX=${CONDA_DIR}/envs/${CONDA_ENV} \
 
 # ======================== root ========================
 # initialize paths we will use
+RUN mkdir /data
 RUN mkdir -p /code_execution
 
 # Create appuser user, permissions, add conda init to startup script
@@ -29,7 +30,8 @@ RUN echo "Creating ${RUNTIME_USER} user..." \
     && groupadd --gid ${RUNTIME_UID} ${RUNTIME_USER}  \
     && useradd --create-home --gid ${RUNTIME_UID} --no-log-init --uid ${RUNTIME_UID} ${RUNTIME_USER} \
     && echo ". ${CONDA_DIR}/etc/profile.d/conda.sh ; conda activate ${CONDA_ENV}" > /etc/profile.d/init_conda.sh \
-    && chown -R ${RUNTIME_USER}:${RUNTIME_USER} /srv /code_execution
+    && chown -R ${RUNTIME_USER}:${RUNTIME_USER} /srv /code_execution \
+    && chmod 664 /data
 
 # Install base packages
 ARG DEBIAN_FRONTEND=noninteractive
@@ -43,6 +45,10 @@ RUN echo "Installing base packages..." \
     && xargs -a /home/${RUNTIME_USER}/apt.txt apt-get install -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /home/${RUNTIME_USER}/apt.txt
+
+# Move generate_rankings into /opt
+COPY scoring /opt/scoring
+
 # ======================================================
 
 # ======================== user ========================
