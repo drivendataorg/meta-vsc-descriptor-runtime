@@ -171,8 +171,7 @@ def main(
     submission_df = evaluate_similarity(
         query_descriptors, reference_descriptors, query_ids, reference_ids
     )
-    import pdb
-    pdb.set_trace()
+    
     # Calculate the metric
     micro_avg_precision = MicroAveragePrecision.score(
         submission_df, gt_df, PREDICTION_LIMIT
