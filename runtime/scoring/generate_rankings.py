@@ -10,10 +10,13 @@ import typer
 import faiss
 from faiss.contrib import exhaustive_search
 
+import time
+
 from typing import List, Optional, Tuple
+from loguru import logger
 
 
-PREDICTION_LIMIT = 100000
+PREDICTION_LIMIT = 100000000
 QUERY_ID_COL = "query_id"
 DATABASE_ID_COL = "reference_id"
 SCORE_COL = "score"
@@ -27,6 +30,7 @@ def query_iterator(xq: np.ndarray):
     bs = 32
     i = 0
     while i < nq:
+        logger.info(f"{i} of {nq}...")
         xqi = xq[i : i + bs]  # noqa: E203
         yield xqi
         if bs < 20_000:
@@ -35,28 +39,34 @@ def query_iterator(xq: np.ndarray):
 
 
 def search_with_capped_res(
-    xq: np.ndarray, xb: np.ndarray, num_results: int, metric=faiss.METRIC_L2
+    xq: np.ndarray, xb: np.ndarray, num_results: int, metric=faiss.METRIC_INNER_PRODUCT
 ):
     """
     Searches xq (queries) into xb (reference), with a maximum total number of results.
     """
+    start = time.time()
+    logger.info("Creating index...")
     index = faiss.IndexFlat(xb.shape[1], metric)
     index.add(xb)
+
+    logger.info("Running exhaustive search...")
 
     radius, lims, dis, ids = exhaustive_search.range_search_max_results(
         index,
         query_iterator(xq),
-        1e10,  # initial radius is arbitrary
+        0,  # initial radius should be zero
         max_results=2 * num_results,
         min_results=num_results,
         ngpu=-1,  # use GPU if available
     )
 
+    logger.info(f"Final determined radius: {radius}")
+
     n = len(dis)
     nq = len(xq)
     if n > num_results:
         # crop to num_results exactly
-        o = dis.argpartition(num_results)[:num_results]
+        o = (-1 * dis).argpartition(num_results)[:num_results]
         mask = np.zeros(n, bool)
         mask[o] = True
         new_dis = dis[mask]
@@ -66,6 +76,10 @@ def search_with_capped_res(
         ]  # noqa: E203
         new_lims = np.cumsum(nres)
         lims, dis, ids = new_lims, new_dis, new_ids
+
+    end = time.time()
+
+    logger.info(f'time taken: {end-start}')
 
     return lims, dis, ids
 
@@ -79,37 +93,22 @@ def evaluate_similarity(
     # Build the index using reference descriptors and timestamps
     nq = len(query)
 
-    # range search max results is not currently functioning for METRIC_INNER_PRODUCT
-    # Workaround, per faiss wiki, is to add an extra dimension in such a way as to make
-    # L2 search equivalent to IP search.
-    # See https://github.com/facebookresearch/faiss/wiki/MetricType-and-distances
-    # and https://gist.github.com/mdouze/e4bdb404dbd976c83fe447e529e5c9dc
-    def augment_xb(xb, phi=None):
-        norms = (xb**2).sum(1)
-        if phi is None:
-            phi = norms.max()
-        extracol = np.sqrt(phi - norms)
-        return np.hstack((xb, extracol.reshape(-1, 1)))
-
-    def augment_xq(xq):
-        extracol = np.zeros(len(xq), dtype="float32")
-        return np.hstack((xq, extracol.reshape(-1, 1)))
-
-    aug_query = augment_xq(query)
-    aug_reference = augment_xb(reference)
+    logger.info("Executing similarity search...")
 
     lims, dis, ids = search_with_capped_res(
-        aug_query,
-        aug_reference,
-        num_results=len(reference) * 30,
-        metric=faiss.METRIC_L2,
+        query,
+        reference,
+        num_results=len(reference),
+        metric=faiss.METRIC_INNER_PRODUCT,
     )
+
+    logger.info("Done!")
 
     score_df = pd.DataFrame(
         {
             "query_id": query_ids[i],
             "reference_id": reference_ids[ids[j]],
-            "score": -dis[j],
+            "score": dis[j],
         }
         for i in range(nq)
         for j in range(lims[i], lims[i + 1])
@@ -148,10 +147,14 @@ def main(
 ):
     """Evaluate a submission for the Meta VSC."""
 
+    logger.info("Loading query descriptors...")
+
     # Load the query and reference descriptors
     query_dataset = np.load(query_descriptors_path, allow_pickle=False)
     query_ids = ["Q" + str(q_id).zfill(4) for q_id in query_dataset["video_ids"]]
     query_descriptors = query_dataset["features"]
+
+    logger.info("Loading reference descriptors...")
 
     reference_dataset = np.load(reference_descriptors_path, allow_pickle=False)
     reference_ids = [
@@ -159,14 +162,17 @@ def main(
     ]
     reference_descriptors = reference_dataset["features"]
 
+    logger.info("Loading ground truth...")
     # Load the ground truth
     gt_df = pd.read_csv(ground_truth_path)
 
     # Create rankings by scoring similarity
+    logger.info("Evaluating similarity...")
     submission_df = evaluate_similarity(
         query_descriptors, reference_descriptors, query_ids, reference_ids
     )
-
+    import pdb
+    pdb.set_trace()
     # Calculate the metric
     micro_avg_precision = MicroAveragePrecision.score(
         submission_df, gt_df, PREDICTION_LIMIT
