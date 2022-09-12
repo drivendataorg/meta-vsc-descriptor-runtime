@@ -31,7 +31,7 @@ RUN echo "Creating ${RUNTIME_USER} user..." \
     && useradd --create-home --gid ${RUNTIME_UID} --no-log-init --uid ${RUNTIME_UID} ${RUNTIME_USER} \
     && echo ". ${CONDA_DIR}/etc/profile.d/conda.sh ; conda activate ${CONDA_ENV}" > /etc/profile.d/init_conda.sh \
     && chown -R ${RUNTIME_USER}:${RUNTIME_USER} /srv /code_execution \
-    && chmod 664 /data
+    && chmod -R 664 /data
 
 # Install base packages
 ARG DEBIAN_FRONTEND=noninteractive
@@ -45,11 +45,6 @@ RUN echo "Installing base packages..." \
     && xargs -a /home/${RUNTIME_USER}/apt.txt apt-get install -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /home/${RUNTIME_USER}/apt.txt
-
-# Move generate_rankings into /opt
-COPY scoring /opt/scoring
-
-# ======================================================
 
 # ======================== user ========================
 USER ${RUNTIME_USER}
@@ -65,9 +60,8 @@ RUN echo "Installing Miniforge..." \
     && find ${CONDA_DIR} -follow -type f -name '*.a' -delete \
     && find ${CONDA_DIR} -follow -type f -name '*.pyc' -delete
 
-# Switch back to root for installing conda packages
 COPY environment-${CPU_OR_GPU}.yml /home/${RUNTIME_USER}/environment.yml
-RUN mamba env create --name ${CONDA_ENV} -f /home/${RUNTIME_USER}/environment.yml  \
+RUN --mount=type=cache,target=${CONDA_DIR}/pkgs mamba env create --name ${CONDA_ENV} -f /home/${RUNTIME_USER}/environment.yml  \
     && mamba clean -afy \
     && conda run pip cache purge \
     && rm /home/${RUNTIME_USER}/environment.yml \
@@ -75,9 +69,13 @@ RUN mamba env create --name ${CONDA_ENV} -f /home/${RUNTIME_USER}/environment.ym
     && find ${CONDA_DIR} -follow -type f -name '*.pyc' -delete \
     && find ${CONDA_DIR} -follow -type f -name '*.js.map' -delete
 
+# ======================== root ========================
+USER root
+COPY scoring /opt/scoring
+
 # Copy run script into working dir and set it as the working doie
 WORKDIR /code_execution
-RUN mkdir data predictions submission
+RUN mkdir submission
 COPY --chown=appuser:appuser tests /code_execution/tests
 COPY --chown=appuser:appuser entrypoint.sh /code_execution/entrypoint.sh
 CMD ["/bin/bash", "/code_execution/entrypoint.sh"]
