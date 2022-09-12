@@ -1,7 +1,7 @@
 import json
 from multiprocessing.sharedctypes import Value
 from pathlib import Path
-from utils import VideoFeature
+from utils import VideoFeature, DescriptorSubmission
 from metric import MicroAveragePrecision
 
 import pandas as pd
@@ -16,7 +16,7 @@ from typing import List, Optional, Tuple
 from loguru import logger
 
 
-PREDICTION_LIMIT = 100000000
+PREDICTION_LIMIT = 100_000
 QUERY_ID_COL = "query_id"
 DATABASE_ID_COL = "reference_id"
 SCORE_COL = "score"
@@ -79,7 +79,7 @@ def search_with_capped_res(
 
     end = time.time()
 
-    logger.info(f'time taken: {end-start}')
+    logger.info(f"time taken: {end-start}")
 
     return lims, dis, ids
 
@@ -119,8 +119,6 @@ def evaluate_similarity(
     )
     return matching_submission_df
 
-    # Query index with each "batch" of query descriptors
-
 
 def main(
     query_descriptors_path: Path = typer.Argument(
@@ -147,20 +145,11 @@ def main(
 ):
     """Evaluate a submission for the Meta VSC."""
 
-    logger.info("Loading query descriptors...")
+    logger.info("Loading submission files...")
 
-    # Load the query and reference descriptors
-    query_dataset = np.load(query_descriptors_path, allow_pickle=False)
-    query_ids = ["Q" + str(q_id).zfill(4) for q_id in query_dataset["video_ids"]]
-    query_descriptors = query_dataset["features"]
-
-    logger.info("Loading reference descriptors...")
-
-    reference_dataset = np.load(reference_descriptors_path, allow_pickle=False)
-    reference_ids = [
-        "R" + str(r_id).zfill(5) for r_id in reference_dataset["video_ids"]
-    ]
-    reference_descriptors = reference_dataset["features"]
+    submission = DescriptorSubmission(
+        query_descriptors_path, reference_descriptors_path
+    )
 
     logger.info("Loading ground truth...")
     # Load the ground truth
@@ -169,9 +158,12 @@ def main(
     # Create rankings by scoring similarity
     logger.info("Evaluating similarity...")
     submission_df = evaluate_similarity(
-        query_descriptors, reference_descriptors, query_ids, reference_ids
+        submission.query_descriptors,
+        submission.reference_descriptors,
+        submission.query_ids,
+        submission.reference_ids,
     )
-    
+
     # Calculate the metric
     micro_avg_precision = MicroAveragePrecision.score(
         submission_df, gt_df, PREDICTION_LIMIT
