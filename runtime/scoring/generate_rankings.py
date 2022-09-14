@@ -164,6 +164,9 @@ def main(
         submission.reference_ids,
     )
 
+    # Save to CSV
+    submission_df.to_csv("/code_execution/submission/rankings.csv")
+
     # Calculate the metric
     micro_avg_precision = MicroAveragePrecision.score(
         submission_df, gt_df, PREDICTION_LIMIT
