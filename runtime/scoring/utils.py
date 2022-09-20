@@ -121,7 +121,7 @@ class DescriptorSubmission:
 
             ndims = dataset["features"].shape[1]
             assert (
-                ndims < self.MAX_DIM
+                ndims <= self.MAX_DIM
             ), f"{axis} descriptor dimensionality {ndims} exceeds max of {self.MAX_DIM}"
 
             # Non-null
@@ -135,7 +135,7 @@ class DescriptorSubmission:
             ), f"Expected {axis} video IDS in range {range}, got id out of range."
 
         except AssertionError as e:
-            raise DataValidationError("Failed to validate dataset: {e}j")
+            raise DataValidationError("Failed to validate dataset: {e}")
 
     def _load_datset(self, path: Path):
         try:

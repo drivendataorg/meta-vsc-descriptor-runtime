@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 from sklearn.metrics import average_precision_score
+from utils import DataValidationError
 
 
 QUERY_ID_COL = "query_id"
@@ -34,7 +35,7 @@ class MicroAveragePrecision:
             not np.isfinite(predicted[SCORE_COL]).all()
             or np.isnan(predicted[SCORE_COL]).any()
         ):
-            raise ExpectedScoringError("Scores must be finite.")
+            raise DataValidationError("Scores must be finite.")
 
         predicted = predicted.sort_values(SCORE_COL, ascending=False)
 
