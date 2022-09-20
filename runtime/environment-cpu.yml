@@ -1,4 +1,4 @@
-name: condaenvp i}
+name: condaenv
 channels:
   - conda-forge
   - fastai

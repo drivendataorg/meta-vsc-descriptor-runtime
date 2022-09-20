@@ -165,7 +165,7 @@ def main(
     )
 
     # Save to CSV
-    submission_df.to_csv("/code_execution/submission/rankings.csv")
+    submission_df.to_csv("/code_execution/submission/rankings.csv", index=False)
 
     # Calculate the metric
     micro_avg_precision = MicroAveragePrecision.score(

@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 from sklearn.metrics import average_precision_score
 
 
@@ -29,12 +30,14 @@ class MicroAveragePrecision:
         :param actual: The ground truth values as a dataframe with specified column names
         :param prediction_limit: The maximum number of predictions to consider
         """
+        if (
+            not np.isfinite(predicted[SCORE_COL]).all()
+            or np.isnan(predicted[SCORE_COL]).any()
+        ):
+            raise Exception("Scores must be finite.")
         predicted = predicted.sort_values(SCORE_COL, ascending=False).iloc[
             :prediction_limit, :
         ]
-        import pdb
-
-        pdb.set_trace()
 
         merged = predicted.merge(
             right=actual.assign(actual=1.0),

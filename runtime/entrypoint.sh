@@ -14,9 +14,24 @@ exit_code=0
     unzip ./submission/submission.zip -d ./
     ls -alh
 
-    # Generate descriptors on a subset of query videos
-    #   (primarily for measurement of resouce usage but also optionally for performance eval)
-    #   Generate resource usage report (don't just rely on logging necessarily)
+    # Generate descriptors on a subset of query videos (primarily for measurement of 
+    # resouce usage but also optionally for performance eval). 
+    # Generate resource usage report
+
+    # if [ -f "main.py" ]
+    # then
+    #     echo "Generating descriptors on a subset of query videos..."
+
+    #     conda run --no-capture-output -n condaenv scalene main.py > output
+
+	#     echo "... finished"
+
+    #     else
+    #         echo "ERROR: Could not find main.py in submission.zip"
+    #         exit_code=1
+    # fi
+
+    # touch /code_execution/submission/resource_usage.json
 
     # Use descriptors to generate rank submission
     #   Load user query and reference descriptors
@@ -39,21 +54,10 @@ exit_code=0
             exit_code=1
     fi
 
-    # if [ -f "main.py" ]
-    # then
-    #     # conda run --no-capture-output -n condaenv python main.py
-
-	#     # echo "... finished"
-
-    #     echo "Running similarity search to generate predictions"
-    #     conda run --no-capture-output -n condaenv python generate_submission.py
-
-	#     echo "... finished"
-
-    #     else
-    #         echo "ERROR: Could not find main.py in submission.zip"
-    #         exit_code=1
-    # fi
+    # # Zip the rankings csv and the resource usage summary together to form the submission file
+    # tar -czvf /code_execution/submission/submission.tar.gz \
+    #     /code_execution/submission/rankings.csv \
+    #     /code_execution/submission/resource_usage.json
 
     echo "================ END ================"
 } |& tee "/code_execution/submission/log.txt"
