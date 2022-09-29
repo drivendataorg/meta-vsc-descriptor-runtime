@@ -1,3 +1,4 @@
+# syntax = docker/dockerfile:1.2
 FROM nvidia/cuda:11.3.1-base-ubuntu20.04
 # adapated from build file for pangeo images
 # https://github.com/pangeo-data/pangeo-docker-images
@@ -62,9 +63,9 @@ RUN echo "Installing Miniforge..." \
 
 # Switch back to root for installing conda packages
 COPY environment-${CPU_OR_GPU}.yml /home/${RUNTIME_USER}/environment.yml
-RUN --mount=type=cache,target=/srv/conda/pkgs mamba env create --name ${CONDA_ENV} -f /home/${RUNTIME_USER}/environment.yml  \
-    # && mamba clean -afy \
-    # && conda run pip cache purge \
+RUN mamba env create --name ${CONDA_ENV} -f /home/${RUNTIME_USER}/environment.yml  \
+    && mamba clean -afy \
+    && conda run pip cache purge \
     && rm /home/${RUNTIME_USER}/environment.yml \
     && find ${CONDA_DIR} -follow -type f -name '*.a' -delete \
     && find ${CONDA_DIR} -follow -type f -name '*.pyc' -delete \

@@ -7,7 +7,7 @@
 ![Python 3.9.13](https://img.shields.io/badge/Python-3.9.13-blue)
 [![Build and publish image](TKTK)](TKTK)
 
-Welcome to the runtime repository for the [Meta Video Similarity Competition](TKTK) beluga photo-identification challenge!
+Welcome to the runtime repository for the [Meta Video Similarity Competition](https://www.drivendata.org/competitions/101/meta-video-similarity-descriptor/page/570/)!
 
 This repository contains the definition of the environment where your code submissions will run. It specifies both the operating system and the software packages that will be available to your solution.
 
@@ -47,42 +47,32 @@ This section guides you through the steps to generate a simple but valid submiss
 First, make sure you have the prerequisites installed.
 
  - A clone or fork of this repository
- - At least 13 GB (_todo: double check with final image_) of free space for both the training images and the Docker container images.
+ - At least 13 GB (_todo: double check with final image_) of free space for the Docker container images, and additional free space for storing the videos from the training set you'll use as your local test set.
  - [Docker](https://docs.docker.com/get-docker/)
  - [GNU make](https://www.gnu.org/software/make/) (optional, but useful for running commands in the Makefile)
 
 ### Download the data
 
-First, download the data from the competition [download page](https://www.drivendata.org/competitions/96/beluga-whales/data/)
-and copy each file into the project `data` folder. In particular, you will need the `metadata.csv` file and the `images.zip` archive,
-which you should extract to `data/images/`. Once everything is downloaded and in the right location, it should look something like this:
+First, download the data from the competition [download page]() and copy each file into the project `data` folder. In particular, you will need the `metadata.csv` file and the `images.zip` archive, which you should extract to `data/images/`. Once everything is downloaded and in the right location, it should look something like this:
 
 ```
-data/                         # Runtime data directory
-├── databases/                # Directory containing the database image IDs for each scenario
-│      ├── scenario01.csv
-│      └── scenario02.csv
-├── images/                   # Directory containing all the query and database images
-│      ├── train0000.jpg
-│      ├── train0001.jpg
-│      ├── train0002.jpg
-│      └── ...
-├── metadata.csv              # CSV file with image metadata (image dimensions, viewpoint, date)
-└── queries/                  # Directory containing the query IDs and image IDs for each scenario
-│      ├── scenario01.csv
-│      └── scenario02.csv
-└── query_scenarios.csv       # CSV file specifying evaluation scenarios
+data/                       # Runtime data directory
+├── metadata.csv            # CSV file with video metadata (aspect ratio, encoding, runtime)
+├── query/                  # Folder containing the query videos for which descriptors will be generated
+│   ├── Q10003.mp4
+│   ├── Q10029.mp4
+│   └── ...
 ```
 
-Later in this guide, when we launch a Docker container from your computer (or the "host" machine), the `data` directory on your host machine will be mounted as a read-only directory in the container as `code_execution/data`. In the runtime, your code will then be able to access all the competition data at `code_execution/data`.
+Later in this guide, when we launch a Docker container from your computer (or the "host" machine), the `data` directory on your host machine will be mounted as a read-only directory in the container as `/data`. In the runtime, your code will then be able to access all the competition data at `/data`.
 
 If you're confused about what all these files are, please make sure to read the ["Procedure for test inference" section](https://www.drivendata.org/competitions/96/beluga-whales/page/482/#inference_procedure) on the Code Submission Format page.
 
 ### The quickstart example
 
-An example `main.py` script is provided at [`submission_quickstart/main.py`](https://github.com/drivendataorg/boem-belugas-runtime/blob/master/submission_src/main.py) for you to get started. You are free to copy it and modify as needed provided that you are otherwise adhering to the [competition rules](https://www.drivendata.org/competitions/96/beluga-whales/rules/). Your main focus in this competition will be on developing a model that can fit into the `predict` function such that it can produce good matches between the query and database images of beluga whales.
+An example `main.py` script is provided at [`submission_quickstart/main.py`](https://github.com/drivendataorg/boem-belugas-runtime/blob/master/submission_src/main.py) for you to get started. You are free to copy it and modify as needed provided that you are otherwise adhering to the [competition rules](). Your main focus in this competition will be on developing a model that can fit into the `generate_descriptors` function such that it can produce descriptors which have a high inner-product similarity for query videos that contain content from reference videos and low inner-product similarity otherwise.
 
-But we'll get around to all that in due time. For now, let's continue with the quickstart and generate a trivial submission of arbitrary predictions so that we can see the entire pipeline in action.
+But we'll get around to all that in due time. For now, let's continue with the quickstart and generate a trivial submission of arbitrary descriptors so that we can see the entire pipeline in action.
 
 ### Run Make commands
 
@@ -270,5 +260,4 @@ test-submission     Runs container using code from `submission/submission.zip` a
 
 ## Good luck! And have fun!
 
-Thanks for reading! Enjoy the competition, and [hit up the forums](https://community.drivendata.org/c/belugas/86) if you have any questions!
-# meta-vsc-runtime
+Thanks for reading! Enjoy the competition, and [hit up the forums]() if you have any questions!

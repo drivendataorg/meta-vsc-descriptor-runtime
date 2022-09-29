@@ -1,14 +1,14 @@
 from pathlib import Path
 
 import pandas as pd
+import numpy as np
 
 
 ROOT_DIRECTORY = Path("/code_execution")
-DATA_DIRECTORY = ROOT_DIRECTORY / "data"
-OUTPUT_FILE = ROOT_DIRECTORY / "submission" / "submission.csv"
+DATA_DIRECTORY = Path("/data")
+OUTPUT_FILE = ROOT_DIRECTORY / "submission" / "runtime_query_descriptors.npz"
 
-
-def predict(query_image_id, database_image_ids):
+def generate_query_descriptors(query_video_ids) -> np.ndarray:
     raise NotImplementedError(
         "This script is just a template. You should adapt it with your own code."
     )
@@ -17,35 +17,23 @@ def predict(query_image_id, database_image_ids):
     return result_images, scores
 
 def main():
-    scenarios_df = pd.read_csv(DATA_DIRECTORY / "query_scenarios.csv")
+    # Loading subset of query images
+    query_subset = pd.read_csv(DATA_DIRECTORY / "query_subset.csv")
+    query_subset_video_ids = query_subset.query_ids.values
 
-    predictions = []
+    ### Generation of query descriptors happens here ######
+    query_descriptors, query_video_ids, query_timestamps = generate_query_descriptors(
+        query_video_ids
+    )
+    ##################################
 
-    for scenario_row in scenarios_df.itertuples():
+    np.savez(
+        OUTPUT_FILE,
+        video_ids=query_video_ids,
+        features=query_descriptors,
+        timestamps=query_timestamps,
+    )
 
-        queries_df = pd.read_csv(DATA_DIRECTORY / scenario_row.queries_path)
-        database_df = pd.read_csv(DATA_DIRECTORY / scenario_row.database_path)
-
-        for query_row in queries_df.itertuples():
-            query_id = query_row.query_id
-            query_image_id = query_row.query_image_id
-            database_image_ids = database_df["database_image_id"].values
-
-            ### Prediction happens here ######
-            result_images, scores = predict(query_image_id, database_image_ids)
-            ##################################
-
-            for pred_image_id, score in zip(result_images, scores):
-                predictions.append(
-                    {
-                        "query_id": query_id,
-                        "database_image_id": pred_image_id,
-                        "score": score,
-                    }
-                )
-
-    predictions_df = pd.DataFrame(predictions)
-    predictions_df.to_csv(OUTPUT_FILE, index=False)
 
 if __name__ == "__main__":
     main()
