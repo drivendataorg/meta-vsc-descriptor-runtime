@@ -22,16 +22,26 @@ exit_code=0
     # then
     #     echo "Generating descriptors on a subset of query videos..."
 
-    #     conda run --no-capture-output -n condaenv scalene main.py > output
+    #     time how long this takes?
 
+    #     conda run --no-capture-output -n condaenv python main.py
+
+        # if [[ -f "subset_query_descriptors.npz" && -f "reference_descriptors.npz" ]]
+        # then
+        #     echo "Running similarity search to generate rankings for scoring..."
+        #     conda run --no-capture-output -n condaenv \
+        #         python /opt/scoring/generate_rankings.py \
+        #         subset_query_descriptors.npz reference_descriptors.npz \
+        #         subset_rankings.csv
+        #     echo "... finished"
+        #     else
+        #         echo "WARNING: Could not find subset_query_descriptors.npz or reference_descriptors.npz in submission.zip"
+        # fi
 	#     echo "... finished"
 
     #     else
-    #         echo "ERROR: Could not find main.py in submission.zip"
-    #         exit_code=1
+    #         echo "WARNING: Could not find main.py in submission.zip"
     # fi
-
-    # touch /code_execution/submission/resource_usage.json
 
     # Use descriptors to generate rank submission
     #   Load user query and reference descriptors
@@ -39,25 +49,26 @@ exit_code=0
     #   Validate data format
     #   Run similarity search
     #   Generate CSV of scored pairings for submission to RankLearningScorer using MicroAP
+    # Generate subset_rankings.csv
 
-    # Expecting two files - query npz and ref npz
+    # Expecting two files - query npz and ref npz, generate full_rankings.csv
     if [[ -f "query_descriptors.npz" && -f "reference_descriptors.npz" ]]
     then
-        echo "Running similarity search to generate rankings.zip for scoring..."
+        echo "Running similarity search to generate rankings for scoring..."
         conda run --no-capture-output -n condaenv \
             python /opt/scoring/generate_rankings.py \
             query_descriptors.npz reference_descriptors.npz \
-            /data/ground_truth.csv
+            full_rankings.csv
 	    echo "... finished"
         else
             echo "ERROR: Could not find query_descriptors.npz or reference_descriptors.npz in submission.zip"
             exit_code=1
     fi
 
-    # # Zip the rankings csv and the resource usage summary together to form the submission file
-    # tar -czvf /code_execution/submission/submission.tar.gz \
-    #     /code_execution/submission/rankings.csv \
-    #     /code_execution/submission/resource_usage.json
+    # Tar the full ranking csv and the subset ranking csv together to form the submission file
+    tar -czvf /code_execution/submission/submission.tar.gz \
+        full_rankings.csv \
+        subset_rankings.csv \
 
     echo "================ END ================"
 } |& tee "/code_execution/submission/log.txt"
