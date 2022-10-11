@@ -22,7 +22,7 @@ endif
 TAG = ${CPU_OR_GPU}-latest
 LOCAL_TAG = ${CPU_OR_GPU}-local
 
-REPO = drivendata/competition-meta-vsc
+REPO = competition-meta-vsc-descriptor
 REGISTRY_IMAGE = metavsc.azurecr.io/${REPO}:${TAG}
 LOCAL_IMAGE = ${REPO}:${LOCAL_TAG}
 CONTAINER_NAME = competition-meta-vsc
