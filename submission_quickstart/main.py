@@ -1,49 +1,64 @@
 from pathlib import Path
-
 import pandas as pd
+import numpy as np
+
+ROOT_DIRECTORY = Path("submission_quickstart")
+DATA_DIRECTORY = Path("data")
+OUTPUT_FILE = ROOT_DIRECTORY / "runtime_query_descriptors.npz"
+QUERY_SUBSET_FILE = DATA_DIRECTORY / "query_subset.csv"
 
 
-ROOT_DIRECTORY = Path("/code_execution")
-DATA_DIRECTORY = ROOT_DIRECTORY / "data"
-OUTPUT_FILE = ROOT_DIRECTORY / "submission" / "submission.csv"
+def generate_query_descriptors(subset_video_ids) -> np.ndarray:
+    # Initialize a reproducible random number generator
+    rng = np.random.RandomState(42)
 
+    # Choose a descriptor dimensionality
+    n_dim = rng.choice([16, 32, 64, 128])
 
-def predict(query_image_id, database_image_ids):
-    # Predict first 20 images, excluding query_image
-    result_images = database_image_ids[database_image_ids != query_image_id][:20].tolist()
-    scores = [0.5] * len(result_images)
-    return result_images, scores
+    # Initialize return values
+    video_ids = []
+    timestamps = []
+    descriptors = []
+
+    # Generate random descriptors for each video
+    for video_id in subset_video_ids:
+        # TODO: limit number of descriptors by video length, either
+        # from reading in video or checking metadata file
+        n_descriptors = rng.randint(low=1, high=11)
+        descriptors.append(rng.standard_normal(size=(n_descriptors, n_dim)))
+
+        # Insert random timestamps
+        start_timestamps = 30 * rng.random(size=(n_descriptors, 1))
+        end_timestamps = start_timestamps + 30 * rng.random(size=(n_descriptors, 1))
+
+        timestamps.append(np.hstack([start_timestamps, end_timestamps]))
+        video_ids.append(np.full(n_descriptors, video_id))
+
+    video_ids = np.concatenate(video_ids).astype(np.int32)
+    descriptors = np.concatenate(descriptors).astype(np.float32)
+    timestamps = np.concatenate(timestamps).astype(np.float32)
+
+    return video_ids, descriptors, timestamps
+
 
 def main():
-    scenarios_df = pd.read_csv(DATA_DIRECTORY / "query_scenarios.csv")
+    # Loading subset of query images
+    query_subset = pd.read_csv(QUERY_SUBSET_FILE)
+    query_subset_video_ids = query_subset.query_id.values
 
-    predictions = []
+    ### Generation of query descriptors happens here ######
+    query_video_ids, query_descriptors, query_timestamps = generate_query_descriptors(
+        query_subset_video_ids
+    )
+    ##################################
 
-    for scenario_row in scenarios_df.itertuples():
+    np.savez(
+        OUTPUT_FILE,
+        video_ids=query_video_ids,
+        features=query_descriptors,
+        timestamps=query_timestamps,
+    )
 
-        queries_df = pd.read_csv(DATA_DIRECTORY / scenario_row.queries_path)
-        database_df = pd.read_csv(DATA_DIRECTORY / scenario_row.database_path)
-
-        for query_row in queries_df.itertuples():
-            query_id = query_row.query_id
-            query_image_id = query_row.query_image_id
-            database_image_ids = database_df["database_image_id"].values
-
-            ### Prediction happens here ######
-            result_images, scores = predict(query_image_id, database_image_ids)
-            ##################################
-
-            for pred_image_id, score in zip(result_images, scores):
-                predictions.append(
-                    {
-                        "query_id": query_id,
-                        "database_image_id": pred_image_id,
-                        "score": score,
-                    }
-                )
-
-    predictions_df = pd.DataFrame(predictions)
-    predictions_df.to_csv(OUTPUT_FILE, index=False)
 
 if __name__ == "__main__":
     main()
