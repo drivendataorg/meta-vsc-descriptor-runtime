@@ -39,6 +39,20 @@ def same_value_ranges(values):
     yield value, start, len(values)
 
 
+def store_features(f, features: List[VideoFeature]):
+    video_ids = []
+    feats = []
+    timestamps = []
+    for feature in features:
+        video_ids.append(np.full(len(feature), feature.video_id, dtype=np.int32))
+        feats.append(feature.feature)
+        timestamps.append(feature.timestamps)
+    video_ids = np.concatenate(video_ids)
+    feats = np.concatenate(feats)
+    timestamps = np.concatenate(timestamps)
+    np.savez(f, video_ids=video_ids, features=feats, timestamps=timestamps)
+
+
 def load_features(f) -> List[VideoFeature]:
     data = np.load(f, allow_pickle=False)
     video_ids = data["video_ids"]
@@ -50,7 +64,7 @@ def load_features(f) -> List[VideoFeature]:
         results.append(
             VideoFeature(
                 video_id=video_id,
-                timestamps=timestamps[start:end],
+                timestamps=timestamps[start:end, :],
                 feature=feats[start:end, :],
             )
         )
@@ -63,9 +77,9 @@ class DataValidationError(Exception):
 
 class DescriptorSubmission:
 
-    QUERY_RANGE = (10_000, 19_999)
-    MAX_QUERY_ROWS = 10_000 * 60
-    REFERENCE_RANGE = (100_000, 139_999)
+    QUERY_RANGE = (20_000, 27_999)
+    MAX_QUERY_ROWS = 8_000 * 60
+    REFERENCE_RANGE = (200_000, 239_999)
     MAX_REFERENCE_ROWS = 40_000 * 60
     MAX_DIM = 512
     SUBMISSION_DTYPE = np.float32

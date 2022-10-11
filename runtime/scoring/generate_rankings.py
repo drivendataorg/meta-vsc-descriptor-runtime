@@ -98,7 +98,7 @@ def evaluate_similarity(
     lims, dis, ids = search_with_capped_res(
         query,
         reference,
-        num_results=len(reference),
+        num_results=10 * len(query),
         metric=faiss.METRIC_INNER_PRODUCT,
     )
 
@@ -135,25 +135,21 @@ def main(
         readable=True,
         help="Path to reference descriptors file (reference_descriptors.npz)",
     ),
-    ground_truth_path: Path = typer.Argument(
+    output_path: Path = typer.Argument(
         ...,
-        exists=True,
+        exists=False,
         dir_okay=False,
         readable=True,
-        help="Path to ground truth CSV file.",
+        help="Path to output rankings CSV file.",
     ),
 ):
-    """Evaluate a submission for the Meta VSC."""
+    """Evaluate a submission for the Meta VSC Descriptor Track."""
 
     logger.info("Loading submission files...")
 
     submission = DescriptorSubmission(
         query_descriptors_path, reference_descriptors_path
     )
-
-    logger.info("Loading ground truth...")
-    # Load the ground truth
-    gt_df = pd.read_csv(ground_truth_path)
 
     # Create rankings by scoring similarity
     logger.info("Evaluating similarity...")
@@ -165,20 +161,7 @@ def main(
     )
 
     # Save to CSV
-    submission_df.to_csv("/code_execution/submission/rankings.csv", index=False)
-
-    # Calculate the metric
-    micro_avg_precision = MicroAveragePrecision.score(
-        submission_df, gt_df, PREDICTION_LIMIT
-    )
-
-    typer.echo(
-        json.dumps(
-            {
-                "micro_average_precision": micro_avg_precision,
-            }
-        )
-    )
+    submission_df.to_csv(output_path, index=False)
 
 
 if __name__ == "__main__":

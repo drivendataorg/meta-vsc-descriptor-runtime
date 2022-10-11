@@ -2,9 +2,9 @@ from pathlib import Path
 import pandas as pd
 import numpy as np
 
-ROOT_DIRECTORY = Path("submission_quickstart")
-DATA_DIRECTORY = Path("data")
-OUTPUT_FILE = ROOT_DIRECTORY / "runtime_query_descriptors.npz"
+ROOT_DIRECTORY = Path("/code_execution/")
+DATA_DIRECTORY = Path("/data")
+OUTPUT_FILE = ROOT_DIRECTORY / "subset_query_descriptors.npz"
 QUERY_SUBSET_FILE = DATA_DIRECTORY / "query_subset.csv"
 
 
@@ -13,7 +13,7 @@ def generate_query_descriptors(subset_video_ids) -> np.ndarray:
     rng = np.random.RandomState(42)
 
     # Choose a descriptor dimensionality
-    n_dim = rng.choice([16, 32, 64, 128])
+    n_dim = 16
 
     # Initialize return values
     video_ids = []
