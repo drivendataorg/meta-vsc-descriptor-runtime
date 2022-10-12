@@ -22,7 +22,7 @@ def generate_random_descriptors(all_video_ids) -> np.ndarray:
     for video_id in all_video_ids:
         # TODO: limit number of descriptors by video length, either
         # from reading in video or checking metadata file
-        n_descriptors = rng.randint(low=1, high=11)
+        n_descriptors = rng.randint(low=5, high=15)
         descriptors.append(rng.standard_normal(size=(n_descriptors, n_dim)))
 
         # Insert random timestamps
@@ -40,8 +40,8 @@ def generate_random_descriptors(all_video_ids) -> np.ndarray:
 
 
 def main():
-    query_video_ids = range(20_000, 28_000)
-    reference_video_ids = range(200_000, 240_000)
+    query_video_ids = range(100_001, 108_405)
+    reference_video_ids = range(100_001, 140_312)
 
     ### Generation of query descriptors happens here ######
     query_video_ids, query_descriptors, query_timestamps = generate_random_descriptors(

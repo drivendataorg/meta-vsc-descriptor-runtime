@@ -24,7 +24,7 @@ def generate_query_descriptors(subset_video_ids) -> np.ndarray:
     for video_id in subset_video_ids:
         # TODO: limit number of descriptors by video length, either
         # from reading in video or checking metadata file
-        n_descriptors = rng.randint(low=1, high=11)
+        n_descriptors = rng.randint(low=5, high=15)
         descriptors.append(rng.standard_normal(size=(n_descriptors, n_dim)))
 
         # Insert random timestamps
@@ -44,11 +44,12 @@ def generate_query_descriptors(subset_video_ids) -> np.ndarray:
 def main():
     # Loading subset of query images
     query_subset = pd.read_csv(QUERY_SUBSET_FILE)
-    query_subset_video_ids = query_subset.query_id.values
+    query_subset_video_ids = query_subset[query_subset.public == 1].query_id.values
+    int_video_ids = [int(vid[1:]) for vid in query_subset_video_ids]
 
     ### Generation of query descriptors happens here ######
     query_video_ids, query_descriptors, query_timestamps = generate_query_descriptors(
-        query_subset_video_ids
+        int_video_ids
     )
     ##################################
 

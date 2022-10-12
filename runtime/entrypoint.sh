@@ -14,42 +14,35 @@ exit_code=0
     unzip ./submission/submission.zip -d ./
     ls -alh
 
-    # Generate descriptors on a subset of query videos (primarily for measurement of 
-    # resouce usage but also optionally for performance eval). 
-    # Generate resource usage report
-
+    # Use submitted code to generate descriptors on a subset of query videos 
     if [ -f "main.py" ]
     then
         echo "Generating descriptors on a subset of query videos..."
 
         conda run --no-capture-output -n condaenv python main.py
 
+        # If code successfully generates subset of descriptors, run similarity search
+        # to generate similarity rankings
         if [[ -f "subset_query_descriptors.npz" && -f "reference_descriptors.npz" ]]
         then
-            echo "Running similarity search to generate rankings for scoring..."
+            echo "Running similarity search to generate subset rankings for scoring..."
             conda run --no-capture-output -n condaenv \
                 python /opt/scoring/generate_rankings.py \
                 subset_query_descriptors.npz reference_descriptors.npz \
                 subset_rankings.csv
             echo "... finished"
             else
-                echo "WARNING: Could not find subset_query_descriptors.npz or reference_descriptors.npz in submission.zip"
+                echo "WARNING: Could not find generated subset_query_descriptors.npz or find reference_descriptors.npz in submission.zip"
+                echo "query_id,reference_id,score" >> subset_rankings.csv
         fi
 	    echo "... finished"
 
         else
             echo "WARNING: Could not find main.py in submission.zip"
+            echo "query_id,reference_id,score" >> subset_rankings.csv
     fi
 
-    # Use descriptors to generate rank submission
-    #   Load user query and reference descriptors
-    #       (Optionally replace loaded descriptors with subset of generated descriptors)
-    #   Validate data format
-    #   Run similarity search
-    #   Generate CSV of scored pairings for submission to RankLearningScorer using MicroAP
-    # Generate subset_rankings.csv
-
-    # Expecting two files - query npz and ref npz, generate full_rankings.csv
+    # Generate full rankings from submitted descriptors via a similarity search
     if [[ -f "query_descriptors.npz" && -f "reference_descriptors.npz" ]]
     then
         echo "Running similarity search to generate rankings for scoring..."

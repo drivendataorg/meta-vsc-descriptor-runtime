@@ -77,10 +77,10 @@ class DataValidationError(Exception):
 
 class DescriptorSubmission:
 
-    QUERY_RANGE = (20_000, 27_999)
-    MAX_QUERY_ROWS = 8_000 * 60
-    REFERENCE_RANGE = (200_000, 239_999)
-    MAX_REFERENCE_ROWS = 40_000 * 60
+    QUERY_RANGE = (100_000, 108_406)
+    MAX_QUERY_ROWS = 8_405 * 60
+    REFERENCE_RANGE = (100_000, 140_312)
+    MAX_REFERENCE_ROWS = 40_312 * 60
     MAX_DIM = 512
     SUBMISSION_DTYPE = np.float32
 
@@ -149,7 +149,7 @@ class DescriptorSubmission:
             ), f"Expected {axis} video IDS in range {range}, got id out of range."
 
         except AssertionError as e:
-            raise DataValidationError("Failed to validate dataset: {e}")
+            raise DataValidationError(f"Failed to validate dataset: {e}")
 
     def _load_datset(self, path: Path):
         try:
