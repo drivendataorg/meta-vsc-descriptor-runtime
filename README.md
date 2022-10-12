@@ -1,7 +1,7 @@
-### If you haven't already done so, start by reading the [Code Submission Format](TKTK) page on the competition website.
+### If you haven't already done so, start by reading the [Code Submission Format](https://www.drivendata.org/competitions/101/meta-video-similarity-descriptor/page/580/) page on the competition website.
 
 
-# Meta Video Similarity Competition? : Code execution runtime
+# Meta Video Similarity Challenge: Descriptor Track Code Execution Runtime
 
 [![Meta Video Similarity Competition](TKTK)](TKTK)
 ![Python 3.9.13](https://img.shields.io/badge/Python-3.9.13-blue)
@@ -13,9 +13,7 @@ This repository contains the definition of the environment where your code submi
 
 This repository has three primary uses for competitors:
 
-1. 💡 **Example solutions**: You can find two examples that will help you develop your own solution.
-    - **[Quickstart example](TKTK):** A minimal code example that runs succesfully in the runtime environment and outputs a properly formatted submission CSV. This will generate arbitrary predictions, so unfortunately you won't win the competition with this example, but you can use it as a guide for bringing in your own work and generating a real submission.
-    - **Deep learning example:** This example implements the benchmark solution based on the [getting started blog post](TKTK).
+1. 💡 **[Quickstart example](https://github.com/drivendataorg/meta-vsc-descriptor-runtime/tree/main/submission_quickstart):** A minimal code example that runs successfully in the runtime environment and outputs a properly formatted submission CSV. This will generate arbitrary predictions, so unfortunately you won't win the competition with this example, but you can use it as a guide for bringing in your own work and generating a real submission.
 2. 🔧 **Test your submission**: Test your submission with a locally running version of the container to discover errors before submitting to the competition site.
 3. 📦 **Request new packages in the official runtime**: Since the Docker container will not have network access, all packages must be pre-installed. If you want to use a package that is not in the runtime environment, make a pull request to this repository.
 
@@ -38,7 +36,9 @@ This repository has three primary uses for competitors:
 
 ----
 
-## Quickstart
+## Quickstart example
+
+The quickstart example allows you to generate valid (but random) descriptors for the full set of query and reference videos, as well as an example `main.py` script for generating descriptors for the test subset.
 
 This section guides you through the steps to generate a simple but valid submission for the competition.
 
@@ -51,36 +51,13 @@ First, make sure you have the prerequisites installed.
  - [Docker](https://docs.docker.com/get-docker/)
  - [GNU make](https://www.gnu.org/software/make/) (optional, but useful for running commands in the Makefile)
 
-### Download the data
-
-First, download the data from the competition [download page]() and copy each file into the project `data` folder. In particular, you will need the `metadata.csv` file and the `images.zip` archive, which you should extract to `data/images/`. Once everything is downloaded and in the right location, it should look something like this:
-
-```
-data/                       # Runtime data directory
-├── metadata.csv            # CSV file with video metadata (aspect ratio, encoding, runtime)
-├── query/                  # Folder containing the query videos for which descriptors will be generated
-│   ├── Q10003.mp4
-│   ├── Q10029.mp4
-│   └── ...
-```
-
-Later in this guide, when we launch a Docker container from your computer (or the "host" machine), the `data` directory on your host machine will be mounted as a read-only directory in the container as `/data`. In the runtime, your code will then be able to access all the competition data at `/data`.
-
-If you're confused about what all these files are, please make sure to read the ["Procedure for test inference" section](https://www.drivendata.org/competitions/96/beluga-whales/page/482/#inference_procedure) on the Code Submission Format page.
-
-### The quickstart example
-
-An example `main.py` script is provided at [`submission_quickstart/main.py`](https://github.com/drivendataorg/boem-belugas-runtime/blob/master/submission_src/main.py) for you to get started. You are free to copy it and modify as needed provided that you are otherwise adhering to the [competition rules](). Your main focus in this competition will be on developing a model that can fit into the `generate_descriptors` function such that it can produce descriptors which have a high inner-product similarity for query videos that contain content from reference videos and low inner-product similarity otherwise.
-
-But we'll get around to all that in due time. For now, let's continue with the quickstart and generate a trivial submission of arbitrary descriptors so that we can see the entire pipeline in action.
-
 ### Run Make commands
 
 To test out the full execution pipeline, make sure Docker is running and then run the following commands in the terminal:
 
 1. **`make pull`** pulls the latest official Docker image from the container registry ([Azure](https://azure.microsoft.com/en-us/services/container-registry/)). You'll need an internet connection for this.
-2. **`make pack-quickstart`** zips the contents of the `submission_quickstart` directory and saves it as `submission/submission.zip`. This is the file containing your code that you will upload to the DrivenData competition site for code execution. But first we'll test that everything looks good locally (see next step).
-3. **`make test-submission`** will do a test run of your submission, simulating what happens during actual code execution. This command runs the Docker container with the requisite host directories mounted, and executes `main.py` to produce a CSV file with your image rankings at `submission/submission.csv`.
+2. **`make pack-quickstart`** generates valid, random descriptors for the full query and reference sets, and then zips the contents of the `submission_quickstart` directory and saves it as `submission/submission.zip`. The `submission.zip` file will contain both the `.npz` and `main.py` files, and is what you will upload to the DrivenData competition site for code execution. But first we'll test that everything looks good locally (see next step).
+3. **`make test-submission`** will do a test run of your submission, simulating what happens during actual code execution. This command runs the Docker container with the requisite host directories mounted, and executes `main.py` to produce a tar file with your rankings for the full set and subset. 
 
 ```bash
 make pull
@@ -88,11 +65,9 @@ make pack-quickstart
 make test-submission
 ```
 
-🎉 **Congratulations!** You've just completed your first test run for the Where's Whale-do competition. If everything worked as expected, you should see a new file `submission/submission.csv` that has been generated.
+🎉 **Congratulations!** You've just completed your first test run for the Video Similarity Challenge Descriptor Track. If everything worked as expected, you should see a new file `submission/submission.tar.gz` has been generated.
 
-If you were ready to make a real submission to the competition, you would upload the `submission.zip` file from step 2 above to the competition [Submissions page](https://www.drivendata.org/competitions/96/beluga-whales/submissions/). The `submission.csv` that is written out during code execution will get **scored** automatically using the [competition scoring metric](https://www.drivendata.org/competitions/96/beluga-whales/page/479/#performance_metric) to determine your rank on the leaderboard.
-
-We'll talk in more detail below about how you can also score your submissions locally (with the _publicly_ available labels) without using up your submissions budget.
+If you were ready to make a real submission to the competition, you would upload the `submission.zip` file from step 2 above to the competition [Submissions page](https://www.drivendata.org/competitions/101/meta-video-similarity-descriptor/submissions/). The `submission.tar.gz` that is written out during code execution will get **scored** automatically using the [competition scoring metric](https://www.drivendata.org/competitions/101/meta-video-similarity-descriptor/page/579/#metric) to determine your rank on the leaderboard.
 
 ----
 
@@ -116,18 +91,54 @@ Let's walk through what you'll need to do, step-by-step. The overall process her
 
 2. **[Download the data](#download-the-data)**
 
+   Download the data from the competition [download page](https://www.drivendata.org/competitions/101/meta-video-similarity-descriptor/data/)
+   and copy the files into the project `data` folder. Once everything is downloaded and in the right location, it should look like this:
+   
+   ```
+   data/                         # Runtime data directory
+   ├── train/                    # Directory containing the training set
+   │   ├── metadata.csv          # Training set metadata file
+   │   ├── ground_truth.csv      # Training set ground truth file
+   │   ├── query/                # Directory containing the test set query videos
+   │   │   ├── Q10000.mp4
+   │   │   ├── Q10001.mp4
+   │   │   ├── Q10002.mp4
+   │   │   └── ...
+   │   └── reference/            # Directory containing the test set reference videos
+   │       ├── R100000.mp4
+   │       ├── R100001.mp4
+   │       ├── R100002.mp4
+   │       └── ...
+   │
+   └── test/                     # Directory containing the test set
+       ├── metadata.csv          # Test set metadata file
+       ├── query/                # Directory containing the test set query videos
+       │   ├── Q20000.mp4
+       │   ├── Q20001.mp4
+       │   ├── Q20002.mp4
+       │   └── ...
+       └── reference/            # Directory containing the test set reference videos
+           ├── R200000.mp4
+           ├── R200001.mp4
+           ├── R200002.mp4
+           └── ...
+   ```
+
 3. **Download the official competition Docker image:**
 
     ```bash
     $ make pull
     ```
 
-4. ⚙️ **Save all of your submission files, including the required `main.py` script, in the `submission_src` folder of the runtime repository.** This is where the real work happens.
-   * You are free to modify the `main.py` template we've provided, and you'll obviously want to add any code necessary to process the queries, run inference, cache intermediate results as necessary, and write out your predictions. Just make sure that you adhere to the competition rules and you still produce a `submission.csv` in the correct format.
-   * Also keep in mind that the runtime already contains a number of packages that might be useful for you ([cpu](https://github.com/drivendataorg/boem-belugas-runtime/tree/master/runtime/environment-cpu.yml) and [gpu](https://github.com/drivendataorg/boem-belugas-runtime/tree/master/runtime/environment-gpu.yml) versions). If there are other packages you'd like added, see the section below on [updating runtime packages](#updating-runtime-packages).
-   * Finally, make sure any model weights or other files you need are also saved in `submission_src`.
+4. ⚙️ **Develop your model.**  
 
-5. **Create a `submission/submission.zip` file containing your code and model assets:**
+   Keep in mind that the runtime already contains a number of packages that might be useful for you ([cpu](https://github.com/drivendataorg/meta-vsc-descriptor-runtime/blob/main/runtime/environment-cpu.yml) and [gpu](https://github.com/drivendataorg/meta-vsc-descriptor-runtime/blob/main/runtime/environment-gpu.yml) versions). If there are other packages you'd like added, see the section below on [updating runtime packages](#updating-runtime-packages).
+
+5. **Save your `.npz` descriptor files and `main.py` script in the `submission_src` folder of the runtime repository.**
+   * You are free to modify the `main.py` template we've provided, and you'll obviously want to add any code necessary to process the queries, cache intermediate results as necessary, and write out your descriptors.
+   * Make sure any model weights or other files you need are also saved in `submission_src`.
+
+6. **Create a `submission/submission.zip` file containing your code and model assets:**
 
     ```bash
     $ make pack-submission
@@ -135,14 +146,14 @@ Let's walk through what you'll need to do, step-by-step. The overall process her
       adding: main.py (deflated 50%)
     ```
 
-6. **Test your submission by launching an instance of the competition Docker image, simulating the same inference process that will take place in the official code execution runtime.** This will mount the requisite host directories on the Docker container, unzip `submission/submission.zip` into the root directory of the container, and then execute `main.py` to produce a CSV file with your image rankings at `submission/submission.csv`.
+7. **Test your submission by launching an instance of the competition Docker image, simulating the same process that will take place in the official code execution runtime.** This will mount the requisite host directories on the Docker container, unzip `submission/submission.zip` into the root directory of the container, and then execute `main.py` to produce your full set and subset rankings at `submission/submission.tar.gz`.
 
    ```
    $ make test-submission
    ```
 
 
-> ⚠️ **Remember** that for local testing purposes, the `code_execution/data` directory is just a mounted version of what you have saved locally in this project's `data` directory. So you will just be using the publicly available training files for local testing. In the official code execution environment, `code_execution/data` will contain the _actual test data_, which no participants have access to, and this is what will be used to compute your score for the leaderboard.
+> ⚠️ **Remember** that for local testing purposes, the `code_execution/data` directory is just a mounted version of what you have saved locally in this project's `data` directory. In the official code execution environment, `code_execution/data` will contain just the test set data and a query subset CSV.
 
 
 ### Logging
@@ -150,34 +161,12 @@ Let's walk through what you'll need to do, step-by-step. The overall process her
 When you run `make test-submission` the logs will be printed to the terminal and written out to `submission/log.txt`. If you run into errors, use the `log.txt` to determine what changes you need to make for your code to execute successfully.
 
 
-### Scoring your submission
-
-We have provided a scoring script as well as example ground truth labels for the example scenarios. You can find these in the [`scoring/` directory](https://github.com/drivendataorg/boem-belugas-runtime/tree/master/scoring). You can use this script to calculate the competition metric in the same way that it will be calculated on the DrivenData platform
-
-To score your submission:
-
-1. After running the above, verify that image rankings generated by your code are saved at `submission/submission.csv`.
-
-2. You need a file containing ground truth labels that conforms to the ground truth format. See [relevant section](https://www.drivendata.org/competitions/96/beluga-whales/page/482/#scoring_ground_truth) on the Code Submission Format page for details. We've provided an example [`scoring/example_labels.csv`](https://github.com/drivendataorg/boem-belugas-runtime/tree/master/scoring/example_labels.csv) file that corresponds to the example scenarios.
-
-3. Install the scoring script requirements
-
-    ```bash
-    $ pip install -r scoring/requirements.txt
-    ```
-
-4. Run `scoring/score_submission.py` with the path to your predictions as the first argument and to the ground truth as the second:
-
-    ```bash
-    $ python scoring/score_submission.py submissions/submission.csv scoring/example_labels.csv
-    ```
-
 ---
 ## Additional information
 
 ### Runtime network access
 
-In the real competition runtime, all internet access is blocked. The local test runtime does not impose the same network restrictions. It's up to you to make sure that your code doesn't make requests to any web resources.
+In the real competition runtime, all internet access is blocked. The local test runtime does not impose the same network restrictions. It's up to you to make sure that your code does not make requests to any web resources.
 
 You can test your submission _without_ internet access by running `BLOCK_INTERNET=true make test-submission`.
 
@@ -226,7 +215,7 @@ To submit a pull request for a new package:
 
 4. Commit the changes to your forked repository.
 
-5. Open a pull request from your branch to the `main` branch of this repository. Navigate to the [Pull requests](https://github.com/drivendataorg/cloud-cover-runtime/pulls) tab in this repository, and click the "New pull request" button. For more detailed instructions, check out [GitHub's help page](https://help.github.com/en/articles/creating-a-pull-request-from-a-fork).
+5. Open a pull request from your branch to the `main` branch of this repository. Navigate to the [Pull requests](https://github.com/drivendataorg/meta-vsc-descriptor-runtime/pulls) tab in this repository, and click the "New pull request" button. For more detailed instructions, check out [GitHub's help page](https://help.github.com/en/articles/creating-a-pull-request-from-a-fork).
 
 6. Once you open the pull request, Github Actions will automatically try building the Docker images with your changes and running the tests in `runtime/tests`. These tests can take up to 30 minutes, and may take longer if your build is queued behind others. You will see a section on the pull request page that shows the status of the tests and links to the logs.
 
@@ -260,4 +249,4 @@ test-submission     Runs container using code from `submission/submission.zip` a
 
 ## Good luck! And have fun!
 
-Thanks for reading! Enjoy the competition, and [hit up the forums]() if you have any questions!
+Thanks for reading! Enjoy the competition, and [hit up the forums](https://community.drivendata.org/c/video-similarity-challenge/90) if you have any questions!
