@@ -36,7 +36,7 @@ This repository has three primary uses for competitors:
 
 ----
 
-## Quickstart example
+## Quickstart
 
 The quickstart example allows you to generate valid (but random) descriptors for the full set of query and reference videos, as well as an example `main.py` script for generating descriptors for the test subset.
 
@@ -89,7 +89,7 @@ Let's walk through what you'll need to do, step-by-step. The overall process her
 
 1. **[Set up the prerequisites](#prerequisites)**
 
-2. **[Download the data](#download-the-data)**
+2. **Download the data**
 
    Download the data from the competition [download page](https://www.drivendata.org/competitions/101/meta-video-similarity-descriptor/data/)
    and copy the files into the project `data` folder. Once everything is downloaded and in the right location, it should look like this:
@@ -124,7 +124,7 @@ Let's walk through what you'll need to do, step-by-step. The overall process her
            └── ...
    ```
 
-3. **Download the official competition Docker image:**
+3. **Download the official competition Docker image**, if you haven't already:
 
     ```bash
     $ make pull
@@ -135,7 +135,7 @@ Let's walk through what you'll need to do, step-by-step. The overall process her
    Keep in mind that the runtime already contains a number of packages that might be useful for you ([cpu](https://github.com/drivendataorg/meta-vsc-descriptor-runtime/blob/main/runtime/environment-cpu.yml) and [gpu](https://github.com/drivendataorg/meta-vsc-descriptor-runtime/blob/main/runtime/environment-gpu.yml) versions). If there are other packages you'd like added, see the section below on [updating runtime packages](#updating-runtime-packages).
 
 5. **Save your `.npz` descriptor files and `main.py` script in the `submission_src` folder of the runtime repository.**
-   * You are free to modify the `main.py` template we've provided, and you'll obviously want to add any code necessary to process the queries, cache intermediate results as necessary, and write out your descriptors.
+   * Working off the `main.py` template we've provided, you'll want to add code as necessary to process the queries, cache intermediate results as necessary, and write out your descriptors.
    * Make sure any model weights or other files you need are also saved in `submission_src`.
 
 6. **Create a `submission/submission.zip` file containing your code and model assets:**
@@ -146,14 +146,16 @@ Let's walk through what you'll need to do, step-by-step. The overall process her
       adding: main.py (deflated 50%)
     ```
 
-7. **Test your submission by launching an instance of the competition Docker image, simulating the same process that will take place in the official code execution runtime.** This will mount the requisite host directories on the Docker container, unzip `submission/submission.zip` into the root directory of the container, and then execute `main.py` to produce your full set and subset rankings at `submission/submission.tar.gz`.
+7. **Test your submission with `make test-submission`** 
+
+    This command launches an instance of the competition Docker image, simulating the same process that will take place in the official code execution runtime.** The requisite host directories will be mounted on the Docker container, `submission/submission.zip` will be unzipped into the root directory of the container, and `main.py` will be executed to produce your subset rankings.
 
    ```
    $ make test-submission
    ```
 
 
-> ⚠️ **Remember** that for local testing purposes, the `code_execution/data` directory is just a mounted version of what you have saved locally in this project's `data` directory. In the official code execution environment, `code_execution/data` will contain just the test set data and a query subset CSV.
+> ⚠️ **Remember** in the official code execution environment, `code_execution/data` will contain just the test set data and a metadata CSV for the query subset. But when testing locally, the `code_execution/data` directory is a mounted version of whatever you have saved locally in this project's `data` directory. 
 
 
 ### Logging
@@ -177,7 +179,7 @@ It is common for models to download pre-trained weights from the internet. Since
 
 ### CPU and GPU
 
-The `make` commands will try to select the CPU or GPU image automatically by setting the `CPU_OR_GPU` variable based on whether `make` detects `nvidia-smi`.
+For local testing, the `make` commands will try to select the CPU or GPU image automatically by setting the `CPU_OR_GPU` variable based on whether `make` detects `nvidia-smi`.
 
 You can explicitly set the `CPU_OR_GPU` variable by prefixing the command with:
 ```bash
@@ -228,21 +230,23 @@ Running `make` at the terminal will tell you all the commands available in the r
 
 ```
 Settings based on your machine:
-SUBMISSION_IMAGE=f6961d910a89   # ID of the image that will be used when running test-submission
+SUBMISSION_IMAGE=d67842989e96   # ID of the image that will be used when running test-submission
 
 Available competition images:
-drivendata/belugas-competition:cpu-local (f6961d910a89); drivendata/belugas-competition:gpu-local (916b2fbc2308);
+competition-meta-vsc-descriptor:cpu-local (d67842989e96);
 
 Available commands:
 
-build               Builds the container locally
-clean               Delete temporary Python cache and bytecode files
-interact-container  Start your locally built container and open a bash shell within the running container; same as submission setup except has network access
-pack-quickstart     Creates a submission/submission.zip file from the source code in submission_quickstart
-pack-submission     Creates a submission/submission.zip file from the source code in submission_src
-pull                Pulls the official container from Azure Container Registry
-test-container      Ensures that your locally built container can import all the Python packages successfully when it runs
-test-submission     Runs container using code from `submission/submission.zip` and data from `data/`
+build               Builds the container locally 
+clean               Delete temporary Python cache and bytecode files 
+interact-container  Start your locally built container and open a bash shell within the running container; same as submission setup except has network access 
+pack-benchmark      Creates a submission/submission.zip file from the source code in submission_benchmark 
+pack-quickstart     Creates a submission/submission.zip file from the source code in submission_quickstart 
+pack-submission     Creates a submission/submission.zip file from the source code in submission_src 
+pull                Pulls the official container from Azure Container Registry 
+test-container      Ensures that your locally built container can import all the Python packages successfully when it runs 
+test-submission     Runs container using code from `submission/submission.zip` and data from `data/` 
+
 ```
 
 ---
