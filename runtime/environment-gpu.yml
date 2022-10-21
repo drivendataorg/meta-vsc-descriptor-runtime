@@ -10,7 +10,7 @@ dependencies:
   - faiss-gpu=1.7.2
   - fastai::fastai=2.7.9
   - ffmpeg-python=0.2.0
-  - h5py=1.12.2
+  - h5py=3.7.0
   - keras=2.10.0
   - lightning-flash[video,image]=0.8.0
   - loguru=0.6.0
