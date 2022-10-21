@@ -58,7 +58,7 @@ build:
 
 ## Ensures that your locally built container can import all the Python packages successfully when it runs
 test-container: build _submission_write_perms
-	docker run \
+	docker run ${GPU_ARGS} \
 		${TTY_ARGS} \
 		--mount type=bind,source="$(shell pwd)"/runtime/tests,target=/tests,readonly \
 		${LOCAL_IMAGE} \
