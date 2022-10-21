@@ -1,8 +1,6 @@
 name: condaenv
 channels:
   - conda-forge
-  - fastai
-  - pytorch
 dependencies:
   - cpuonly=2.0
   - cython=0.29.32

@@ -34,7 +34,7 @@ def generate_query_descriptors(subset_video_ids) -> np.ndarray:
         timestamps.append(np.hstack([start_timestamps, end_timestamps]))
         video_ids.append(np.full(n_descriptors, video_id))
 
-    video_ids = np.concatenate(video_ids).astype(np.int32)
+    video_ids = np.concatenate(video_ids)
     descriptors = np.concatenate(descriptors).astype(np.float32)
     timestamps = np.concatenate(timestamps).astype(np.float32)
 
@@ -44,12 +44,11 @@ def generate_query_descriptors(subset_video_ids) -> np.ndarray:
 def main():
     # Loading subset of query images
     query_subset = pd.read_csv(QUERY_SUBSET_FILE)
-    query_subset_video_ids = query_subset[query_subset.public == 1].query_id.values
-    int_video_ids = [int(vid[1:]) for vid in query_subset_video_ids]
+    query_subset_video_ids = query_subset.video_id.values
 
     ### Generation of query descriptors happens here ######
     query_video_ids, query_descriptors, query_timestamps = generate_query_descriptors(
-        int_video_ids
+        query_subset_video_ids
     )
     ##################################
 

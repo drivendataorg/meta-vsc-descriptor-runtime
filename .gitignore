@@ -1,5 +1,8 @@
 submission/*
 submission.csv
+*.npz
+*.tar.gz
+data/*
 
 ## Python.gitignore
 ## https://github.com/github/gitignore/blob/main/Python.gitignore

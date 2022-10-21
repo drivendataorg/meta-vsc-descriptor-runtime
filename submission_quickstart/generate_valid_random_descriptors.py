@@ -1,9 +1,14 @@
 from pathlib import Path
+
 import numpy as np
+import pandas as pd
 
 ROOT_DIRECTORY = Path(__file__).parent
 QUERY_OUTPUT_FILE = ROOT_DIRECTORY / "query_descriptors.npz"
 REFERENCE_OUTPUT_FILE = ROOT_DIRECTORY / "reference_descriptors.npz"
+DATA_DIRECTORY = ROOT_DIRECTORY.parent / "data"
+QUERY_METADATA_PATH = DATA_DIRECTORY / "query_metadata.csv"
+REFERENCE_METADATA_PATH = DATA_DIRECTORY / "reference_metadata.csv"
 
 
 def generate_random_descriptors(all_video_ids) -> np.ndarray:
@@ -32,7 +37,7 @@ def generate_random_descriptors(all_video_ids) -> np.ndarray:
         timestamps.append(np.hstack([start_timestamps, end_timestamps]))
         video_ids.append(np.full(n_descriptors, video_id))
 
-    video_ids = np.concatenate(video_ids).astype(np.int32)
+    video_ids = np.concatenate(video_ids)
     descriptors = np.concatenate(descriptors).astype(np.float32)
     timestamps = np.concatenate(timestamps).astype(np.float32)
 
@@ -40,8 +45,8 @@ def generate_random_descriptors(all_video_ids) -> np.ndarray:
 
 
 def main():
-    query_video_ids = range(100_001, 108_405)
-    reference_video_ids = range(100_001, 140_312)
+    query_video_ids = pd.read_csv(QUERY_METADATA_PATH).video_id.values
+    reference_video_ids = pd.read_csv(REFERENCE_METADATA_PATH).video_id.values
 
     ### Generation of query descriptors happens here ######
     query_video_ids, query_descriptors, query_timestamps = generate_random_descriptors(

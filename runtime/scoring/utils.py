@@ -1,13 +1,18 @@
-from pathlib import Path
 from dataclasses import dataclass
-from typing import List
+from pathlib import Path
+from typing import List, Iterator
+
 import numpy as np
-from typing import Tuple
+import pandas as pd
+
+DATA_DIRECTORY = Path("/data")
+QUERY_METADATA_PATH = DATA_DIRECTORY / "query_metadata.csv"
+REFERENCE_METADATA_PATH = DATA_DIRECTORY / "reference_metadata.csv"
 
 
 @dataclass
 class VideoMetadata:
-    video_id: int
+    video_id: str
     timestamps: np.ndarray
 
     def __len__(self):
@@ -44,7 +49,7 @@ def store_features(f, features: List[VideoFeature]):
     feats = []
     timestamps = []
     for feature in features:
-        video_ids.append(np.full(len(feature), feature.video_id, dtype=np.int32))
+        video_ids.append(np.full(len(feature), feature.video_id))
         feats.append(feature.feature)
         timestamps.append(feature.timestamps)
     video_ids = np.concatenate(video_ids)
@@ -71,61 +76,71 @@ def load_features(f) -> List[VideoFeature]:
     return results
 
 
+def format_list_truncated(li: Iterator):
+    li = list(li)
+    if len(li) <= 3:
+        return str(li)
+    else:
+        return str(li[:3]).rstrip("]") + ", ...]"
+
+
 class DataValidationError(Exception):
     pass
 
 
 class DescriptorSubmission:
+    """For reading and validating descriptor submissions"""
 
-    QUERY_RANGE = (100_000, 108_406)
-    MAX_QUERY_ROWS = 8_405 * 60
-    REFERENCE_RANGE = (100_000, 140_312)
-    MAX_REFERENCE_ROWS = 40_312 * 60
     MAX_DIM = 512
     SUBMISSION_DTYPE = np.float32
 
     def __init__(self, query_path: Path, reference_path: Path):
+        # Load metadata files for validating against
+        valid_query_ids, max_query_rows = self._load_metadata(QUERY_METADATA_PATH)
+        valid_reference_ids, max_reference_rows = self._load_metadata(
+            REFERENCE_METADATA_PATH
+        )
+
+        # Load submitted descriptors from npzs
         self._query = self._load_datset(query_path)
         self._reference = self._load_datset(reference_path)
 
+        # Validate submitted descriptor data against emtadata
         self._validate_descriptors(
-            self._query, self.QUERY_RANGE, self.MAX_QUERY_ROWS, "query"
+            self._query, valid_query_ids, max_query_rows, "query"
         )
         self._validate_descriptors(
-            self._reference, self.REFERENCE_RANGE, self.MAX_REFERENCE_ROWS, "reference"
+            self._reference,
+            valid_reference_ids,
+            max_reference_rows,
+            "reference",
         )
 
     @property
     def query_descriptors(self):
-        """Return full query descriptors ndarray"""
         return self._query["features"]
 
     @property
     def reference_descriptors(self):
-        """Return full reference descriptors ndarray"""
         return self._reference["features"]
 
     @property
     def query_ids(self):
-        """Return strings of the format Q12345"""
-        return ["Q" + str(r_id).zfill(5) for r_id in self._query["video_ids"]]
+        return self._query["video_ids"]
 
     @property
     def reference_ids(self):
-        """Return strings of the format R123456"""
-        return ["R" + str(r_id).zfill(6) for r_id in self._reference["video_ids"]]
+        return self._reference["video_ids"]
 
     @property
     def query_timestamps(self):
-        """Return query timestamps"""
         return self._query["timestamps"]
 
     @property
     def reference_timestamps(self):
-        """Return reference timestamps"""
         return self._reference["timestamps"]
 
-    def _validate_descriptors(self, dataset, range: Tuple, max_rows: int, axis: str):
+    def _validate_descriptors(self, dataset, valid_ids, max_rows: int, axis: str):
         try:
             # Shape
             nrows = dataset["features"].shape[0]
@@ -144,12 +159,26 @@ class DescriptorSubmission:
             ).any(), f"Your {axis} descriptors contain at least one null value"
 
             # Valid IDs
-            assert all(dataset["video_ids"] >= range[0]) and all(
-                dataset["video_ids"] <= range[1]
-            ), f"Expected {axis} video IDS in range {range}, got id out of range."
+            valid_ids = set(valid_ids)
+            submission_ids = set(dataset["video_ids"])
+            invalid_ids = submission_ids.difference(valid_ids)
+            assert (
+                len(invalid_ids) == 0
+            ), f"Submission has {len(invalid_ids)} invalid {axis} id values: {format_list_truncated(invalid_ids)}"
 
         except AssertionError as e:
             raise DataValidationError(f"Failed to validate dataset: {e}")
+
+    def _load_metadata(self, path: Path):
+        try:
+            metadata_df = pd.read_csv(path)
+            valid_int_ids = metadata_df.video_id
+            max_rows = metadata_df.duration_sec.apply(np.ceil).sum()
+        except:
+            raise DataValidationError(
+                f"Unable to read in metadata csv {path} and extract video ids and lengths."
+            )
+        return valid_int_ids, max_rows
 
     def _load_datset(self, path: Path):
         try:

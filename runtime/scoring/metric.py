@@ -1,8 +1,7 @@
-import pandas as pd
 import numpy as np
+import pandas as pd
 from sklearn.metrics import average_precision_score
 from utils import DataValidationError
-
 
 QUERY_ID_COL = "query_id"
 DATABASE_ID_COL = "reference_id"
@@ -16,7 +15,7 @@ class MicroAveragePrecision:
     _description = (
         r"The metric used for this competition is micro average precision (µAP). "
         r"µAP is calculated by ordering predictions by score and "
-        r"finding the weighted average of the total precision at each threshold ${k} when weighted by "
+        r"finding the weighted average of the total precision at each threshold ${k}$ when weighted by "
         r"the increase in recall from the previous threshold. $P_{k}$ and $R_{k}$ are respectively "
         r"precision and recall at threshold $k$."
     )
