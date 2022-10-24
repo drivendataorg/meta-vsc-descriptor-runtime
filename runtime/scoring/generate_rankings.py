@@ -1,20 +1,15 @@
-import json
+import time
 from multiprocessing.sharedctypes import Value
 from pathlib import Path
-from utils import VideoFeature, DescriptorSubmission
-from metric import MicroAveragePrecision
+from typing import List
 
-import pandas as pd
-import numpy as np
-import typer
 import faiss
+import numpy as np
+import pandas as pd
+import typer
 from faiss.contrib import exhaustive_search
-
-import time
-
-from typing import List, Optional, Tuple
 from loguru import logger
-
+from utils import DescriptorSubmission, VideoFeature
 
 PREDICTION_LIMIT = 100_000
 QUERY_ID_COL = "query_id"
