@@ -20,8 +20,15 @@ jobs:
       GITHUB_ACTIONS_NO_TTY: true
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+          cache: 'pip'
+
+      - name: Install requirements
+      - run: pip install -r requirements.txt
+
       - name: Test zipping submission_quickstart
         run: |
           make pack-quickstart
