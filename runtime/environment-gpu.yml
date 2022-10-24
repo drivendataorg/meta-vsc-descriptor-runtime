@@ -32,5 +32,5 @@ dependencies:
   - tqdm=4.64.1
   - pip: 
     - augly==1.0.0
-    - tensorflow-gpu==2.10.0
+    - tensorflow-gpu==2.7.0
     - tslearn==0.5.2
