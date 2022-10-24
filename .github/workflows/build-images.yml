@@ -41,13 +41,13 @@ jobs:
             -c "conda run --no-capture-output -n condaenv pytest tests/test_packages.py"
 
       - name: Log into Azure
-#        if: github.ref == 'refs/heads/master'
+        if: github.ref == 'refs/heads/master'
         uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Log into ACR with Docker
-#        if: github.ref == 'refs/heads/master'
+        if: github.ref == 'refs/heads/master'
         uses: azure/docker-login@v1
         with:
           login-server: ${{ env.LOGIN_SERVER }}
@@ -55,6 +55,6 @@ jobs:
           password: ${{ secrets.REGISTRY_PASSWORD }}
 
       - name: Push image to ACR
-#        if: github.ref == 'refs/heads/master'
+        if: github.ref == 'refs/heads/master'
         run: |
           docker push $LOGIN_SERVER/$IMAGE --all-tags
