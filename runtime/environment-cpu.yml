@@ -23,6 +23,7 @@ dependencies:
   - pip=22.3
   - pytest=7.2.0
   - python=3.9.13
+  - python-magic=0.4.27
   - pytorch::pytorch=1.12.1
   - pytorch::torchvision=0.13.1
   - scikit-image=0.19.3
@@ -30,6 +31,6 @@ dependencies:
   - scipy=1.9.3
   - tqdm=4.64.1
   - pip: 
-    - augly==1.0.0
+    - augly[image,video]==1.0.0
     - tensorflow-cpu==2.10.0
     - tslearn==0.5.2
