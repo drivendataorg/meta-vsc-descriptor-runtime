@@ -66,7 +66,7 @@ test-container: build _submission_write_perms
 
 ## Start your locally built container and open a bash shell within the running container; same as submission setup except has network access
 interact-container: build _submission_write_perms
-	docker run \
+	docker run ${GPU_ARGS}\
 		--mount type=bind,source="$(shell pwd)"/data,target=/data,readonly \
 		--mount type=bind,source="$(shell pwd)"/submission,target=/code_execution/submission \
 		--shm-size 8g \
