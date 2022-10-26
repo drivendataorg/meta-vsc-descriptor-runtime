@@ -1,5 +1,9 @@
+from pathlib import Path
+from typing import Optional
+
 import numpy as np
 import pandas as pd
+import typer
 from sklearn.metrics import average_precision_score
 from utils import DataValidationError
 
@@ -58,3 +62,36 @@ class MicroAveragePrecision:
 
         adjusted_ap = unadjusted_ap * (predicted_n_pos / actual_n_pos)
         return adjusted_ap
+
+def main(
+    rankings_csv: Path = typer.Argument(
+        ...,
+        exists=True,
+        dir_okay=False,
+        readable=True,
+        help="Path to rankings csv",
+    ),
+    ground_truth_csv: Path = typer.Argument(
+        ...,
+        exists=True,
+        dir_okay=False,
+        readable=True,
+        help="Path to ground truth csv (if provided, will subset ground truth appropriately)",
+    ),
+    subset_csv: Optional[Path] = typer.Option(
+        None,
+    ),
+):
+    rankings_df = pd.read_csv(rankings_csv)
+    ground_truth_df = pd.read_csv(ground_truth_csv)
+    if subset_csv:
+        subset_df = pd.read_csv(subset_csv)
+        index = set(subset_df.video_id.values) & set(ground_truth_df.query_id.values)
+        ground_truth_df = ground_truth_df.loc[ground_truth_df.query_id.isin(index)]
+    
+    scorer = MicroAveragePrecision()
+    uap = scorer.score(rankings_df, ground_truth_df, -1)
+    print(f"uAP score: {uap}")
+
+if __name__ == "__main__":
+    typer.run(main)
