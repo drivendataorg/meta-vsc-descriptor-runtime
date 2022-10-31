@@ -40,9 +40,6 @@ def test_gpu_packages():
         assert tf.test.is_built_with_cuda()
         assert tf.config.list_physical_devices("GPU")
 
-        import faiss
-        assert faiss.get_num_gpus() > 0
-
     except FileNotFoundError:
         warnings.warn(
             "Skipping GPU import tests since nvidia-smi is not present on test machine."
