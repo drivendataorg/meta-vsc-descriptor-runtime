@@ -26,7 +26,9 @@ class MicroAveragePrecision:
 
     @classmethod
     def score(
-        cls, predicted: pd.DataFrame, actual: pd.DataFrame, prediction_limit: int
+        cls,
+        predicted: pd.DataFrame,
+        actual: pd.DataFrame,
     ):
         """Calculates micro average precision for a ranking task.
 
@@ -63,6 +65,7 @@ class MicroAveragePrecision:
         adjusted_ap = unadjusted_ap * (predicted_n_pos / actual_n_pos)
         return adjusted_ap
 
+
 def main(
     rankings_csv: Path = typer.Argument(
         ...,
@@ -88,10 +91,11 @@ def main(
         subset_df = pd.read_csv(subset_csv)
         index = set(subset_df.video_id.values) & set(ground_truth_df.query_id.values)
         ground_truth_df = ground_truth_df.loc[ground_truth_df.query_id.isin(index)]
-    
+
     scorer = MicroAveragePrecision()
-    uap = scorer.score(rankings_df, ground_truth_df, -1)
+    uap = scorer.score(rankings_df, ground_truth_df)
     print(f"uAP score: {uap}")
+
 
 if __name__ == "__main__":
     typer.run(main)
