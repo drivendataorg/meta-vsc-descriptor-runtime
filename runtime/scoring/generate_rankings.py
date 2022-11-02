@@ -11,7 +11,6 @@ from faiss.contrib import exhaustive_search
 from loguru import logger
 from utils import DescriptorSubmission, VideoFeature
 
-PREDICTION_LIMIT = 100_000
 QUERY_ID_COL = "query_id"
 DATABASE_ID_COL = "reference_id"
 SCORE_COL = "score"

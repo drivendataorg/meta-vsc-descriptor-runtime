@@ -64,10 +64,13 @@ RUN echo "Installing Miniforge..." \
 
 # Switch back to root for installing conda packages
 COPY environment-${CPU_OR_GPU}.yml /home/${RUNTIME_USER}/environment.yml
+COPY requirements.txt /home/${RUNTIME_USER}/requirements.txt
 RUN mamba env create --name ${CONDA_ENV} -f /home/${RUNTIME_USER}/environment.yml  \
     && mamba clean -afy \
+    && conda run --no-capture-output -n ${CONDA_ENV} pip install --no-deps -r /home/${RUNTIME_USER}/requirements.txt \
     && conda run pip cache purge \
     && rm /home/${RUNTIME_USER}/environment.yml \
+    && rm /home/${RUNTIME_USER}/requirements.txt \
     && find ${CONDA_DIR} -follow -type f -name '*.a' -delete \
     && find ${CONDA_DIR} -follow -type f -name '*.pyc' -delete \
     && find ${CONDA_DIR} -follow -type f -name '*.js.map' -delete

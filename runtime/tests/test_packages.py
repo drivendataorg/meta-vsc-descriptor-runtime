@@ -18,6 +18,7 @@ packages = [
     "tensorflow",
     "torch",  # pytorch
     "faiss",
+    "augly",
 ]
 
 
