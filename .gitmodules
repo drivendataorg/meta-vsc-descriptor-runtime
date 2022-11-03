@@ -1,3 +1,3 @@
-[submodule "benchmark_src/vsc2022"]
-	path = benchmark_src/vsc2022
+[submodule "vsc2022"]
+	path = vsc2022
 	url = git@github.com:facebookresearch/vsc2022.git
