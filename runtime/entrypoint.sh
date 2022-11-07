@@ -34,7 +34,7 @@ exit_code=0
             echo "... finished"
             else
                 echo "WARNING: Could not find generated subset_query_descriptors.npz or find reference_descriptors.npz in submission.zip"
-                echo "query_id,reference_id,score" >> subset_rankings.csv
+                echo "query_id,ref_id,score" >> subset_rankings.csv
         fi
 	    echo "... finished"
 
