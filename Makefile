@@ -89,7 +89,7 @@ pack-quickstart:
 ifneq (,$(wildcard ./submission/submission.zip))
 	$(error You already have a submission/submission.zip file. Rename or remove that file (e.g., rm submission/submission.zip).)
 endif
-	python submission_quickstart/generate_valid_random_descriptors.py
+	python submission_quickstart/generate_valid_random_descriptors.py && \
 	cd submission_quickstart; zip -r ../submission/submission.zip main.py query_descriptors.npz reference_descriptors.npz
 
 ## Creates a submission/submission.zip file from the source code in submission_benchmark
@@ -98,7 +98,10 @@ pack-benchmark:
 ifneq (,$(wildcard ./submission/submission.zip))
 	$(error You already have a submission/submission.zip file. Rename or remove that file (e.g., rm submission/submission.zip).)
 endif
-	cd benchmark_src; zip -r ../submission/submission.zip ./*
+	cp -r vsc2022 benchmark_src/ && \
+		cd benchmark_src && \
+		zip -r ../submission/submission.zip ./* && \
+		cd .. && rm -r benchmark_src/vsc2022
 
 ## Creates a submission/submission.zip file from the source code in submission_src
 pack-submission:

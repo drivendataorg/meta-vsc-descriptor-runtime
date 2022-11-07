@@ -13,8 +13,8 @@ def main():
     command = shlex.split(
         f"""
     conda run --no-capture-output -n condaenv python -m vsc.baseline.inference
-        --torchscript_path "/code_execution/vsc2022/vsc/baseline/adapted_sscd_disc_mixup.torchscript.pt"
-        --accelerator=cpu --processes="1"
+        --torchscript_path "/code_execution/model_assets/sscd_disc_mixup.no_l2_norm.torchscript.pt"
+        --accelerator=cuda --processes="1"
         --dataset_path "{QUERY_SUBSET_VIDEOS_FOLDER}"
         --output_file "{OUTPUT_FILE}"
     """
