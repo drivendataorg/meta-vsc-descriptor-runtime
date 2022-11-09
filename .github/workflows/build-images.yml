@@ -31,7 +31,7 @@ jobs:
 
       - name: Build Image
         run: |
-          docker build runtime \
+          docker buildx build \
             --build-arg CPU_OR_GPU=${{ matrix.proc }} \
             --tag $LOGIN_SERVER/$IMAGE:$SHA_TAG \
             --tag $LOGIN_SERVER/$IMAGE:$LATEST_TAG \
