@@ -1,4 +1,4 @@
-.PHONY: build pull pack-benchmark pack-submission test-submission fetch-submodules update-submodules
+.PHONY: build pull pack-benchmark pack-submission test-submission update-submodules data-subset
 
 # ================================================================================================
 # Settings
@@ -61,7 +61,7 @@ build:
 
 # Fetch or update all submodules (vsc2022 and VCSL)
 update-submodules:
-	git pull && 
+	git pull && \
 	git submodule update --init --recursive
 
 ## Ensures that your locally built container can import all the Python packages successfully when it runs
@@ -92,7 +92,7 @@ pack-quickstart:
 ifneq (,$(wildcard ./submission/submission.zip))
 	$(error You already have a submission/submission.zip file. Rename or remove that file (e.g., rm submission/submission.zip).)
 endif
-	python submission_quickstart/generate_valid_random_descriptors.py && \
+	python scripts/generate_valid_random_descriptors.py && \
 	cd submission_quickstart; zip -r ../submission/submission.zip main.py query_descriptors.npz reference_descriptors.npz
 
 ## Creates a submission/submission.zip file from the source code in submission_benchmark
@@ -139,6 +139,10 @@ endif
 		--name ${CONTAINER_NAME} \
 		--rm \
 		${SUBMISSION_IMAGE}
+
+data-subset:
+	rm -f data/*.csv data/queries/*.mp4 && \
+	python scripts/generate_data_subset.py --dataset train --subset_fraction 0.01
 
 ## Delete temporary Python cache and bytecode files
 clean:
