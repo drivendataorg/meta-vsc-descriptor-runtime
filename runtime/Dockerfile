@@ -77,6 +77,7 @@ USER root
 # Copy necessary files from VSC2022 repo
 COPY vsc2022/vsc/*.py /opt/vsc
 COPY vsc2022/descriptor_eval.py /opt/descriptor_eval.py
+COPY vsc2022/LICENSE /opt/LICENSE
 WORKDIR /code_execution
 RUN mkdir predictions submission
 COPY --chown=appuser:appuser ./runtime/tests /code_execution/tests
