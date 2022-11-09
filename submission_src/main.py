@@ -13,6 +13,9 @@ def generate_query_descriptors(query_video_ids) -> np.ndarray:
     raise NotImplementedError(
         "This script is just a template. You should adapt it with your own code."
     )
+    video_ids = ...
+    descriptors = ...
+    timestamp_intervals = ...
     return video_ids, descriptors, timestamp_intervals
 
 
