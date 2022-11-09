@@ -14,7 +14,11 @@ parser.add_argument(
     default=0.01,
 )
 parser.add_argument(
-    "--dataset", help="Dataset type - either 'train' or 'test'", type=str, required=True
+    "--dataset",
+    help="Dataset type",
+    type=str,
+    required=True,
+    choices=["train", "test", "phase2"],
 )
 
 
