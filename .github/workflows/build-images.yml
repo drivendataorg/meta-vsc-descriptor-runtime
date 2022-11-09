@@ -22,13 +22,10 @@ jobs:
       LATEST_TAG: ${{ matrix.proc }}-latest
 
     steps:
-      - uses: actions/checkout@v2
-
       - uses: actions/checkout@v3
         with:
-          repository: facebookresearch/vsc2022
+          submodules: true
           ssh-key: ${{ secrets.SSH_PRIVATE_KEY }}
-          path: vsc2022
 
       - name: Build Image
         run: |
