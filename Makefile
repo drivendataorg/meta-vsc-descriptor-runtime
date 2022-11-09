@@ -1,4 +1,4 @@
-.PHONY: build pull pack-benchmark pack-submission test-submission update-submodules data-subset
+.PHONY: build pull pack-submission test-submission update-submodules data-subset
 
 # ================================================================================================
 # Settings
@@ -94,17 +94,6 @@ ifneq (,$(wildcard ./submission/submission.zip))
 endif
 	python scripts/generate_valid_random_descriptors.py && \
 	cd submission_quickstart; zip -r ../submission/submission.zip main.py query_descriptors.npz reference_descriptors.npz
-
-## Creates a submission/submission.zip file from the source code in submission_benchmark
-pack-benchmark:
-# Don't overwrite so no work is lost accidentally
-ifneq (,$(wildcard ./submission/submission.zip))
-	$(error You already have a submission/submission.zip file. Rename or remove that file (e.g., rm submission/submission.zip).)
-endif
-	cp -r vsc2022 benchmark_src/ && \
-		cd benchmark_src && \
-		zip -r ../submission/submission.zip ./* && \
-		cd .. && rm -r benchmark_src/vsc2022
 
 ## Creates a submission/submission.zip file from the source code in submission_src
 pack-submission:
