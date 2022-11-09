@@ -1,4 +1,0 @@
-matplotlib
-pandas
-torch
-torchvision
