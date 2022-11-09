@@ -75,8 +75,7 @@ RUN mamba env create --name ${CONDA_ENV} -f /home/${RUNTIME_USER}/environment.ym
 # Copy run script into working dir and set it as the working doie
 USER root
 # Copy necessary files from VSC2022 repo
-COPY vsc2022/vsc /opt/vsc
-RUN rm -rf /opt/vsc/baseline /opt/vsc/__pycache__
+COPY vsc2022/vsc/*.py /opt/vsc
 COPY vsc2022/descriptor_eval.py /opt/descriptor_eval.py
 WORKDIR /code_execution
 RUN mkdir predictions submission
