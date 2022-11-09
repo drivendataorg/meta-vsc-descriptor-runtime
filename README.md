@@ -7,7 +7,7 @@
 ![Python 3.9.13](https://img.shields.io/badge/Python-3.9.13-blue)
 [![Build and publish image](https://github.com/drivendataorg/meta-vsc-descriptor-runtime/actions/workflows/build-images.yml/badge.svg?branch=main)](https://github.com/drivendataorg/meta-vsc-descriptor-runtime/actions/workflows/build-images.yml?query=main)
 
-Welcome to the runtime repository for the [Meta Video Similarity Competition](https://www.drivendata.org/competitions/101/meta-video-similarity-descriptor/)!
+Welcome to the runtime repository for the [Meta Video Similarity Competition](https://www.drivendata.org/competitions/101/meta-video-similarity-descriptor/)! 
 
 As mentioned in the [Problem Description](https://www.drivendata.org/competitions/101/meta-video-similarity-descriptor/page/579/) and [Code Submission Format](https://www.drivendata.org/competitions/101/meta-video-similarity-descriptor/page/580/) pages, this competition is a **hybrid code execution** competition. This means that you will submit **both** the full set of query and reference descriptors that you generate for videos in the test set **as well as** the code that generates those descriptors. This repository contains the definition of the environment where your code submissions will run on a subset of videos in the query set to ensure that your submission meets the given resource constraints. It specifies both the operating system and the software packages that will be available to your solution.
 
@@ -16,6 +16,8 @@ This repository has three primary uses for competitors:
 1. 💡 **[Quickstart example](https://github.com/drivendataorg/meta-vsc-descriptor-runtime/tree/main/submission_quickstart):** A minimal code example that runs successfully in the runtime environment and outputs a properly formatted submission tarfile. This will generate random descriptors, so unfortunately you won't win the competition with this example, but you can use it as a guide for bringing in your own work and generating a real submission.
 2. 🔧 **Test your submission**: Test your submission with a locally running version of the container to discover errors before submitting to the competition site.
 3. 📦 **Request new packages in the official runtime**: Since the Docker container will not have network access, all packages must be pre-installed. If you want to use a package that is not in the runtime environment, make a pull request to this repository.
+
+This repository is a companion repository to the [`vsc2022` codebase](https://github.com/facebookresearch/vsc2022/), which provides a benchmark solution to both tracks of this challenge. The `vsc2022` codebase is included as a submodule of this repository, and you can check it out fully by running `make update-submodules` as explained further below.
 
  ----
 
@@ -123,6 +125,7 @@ This section provides instructions on how to develop and run your code submissio
 
 ```
 make pull
+make update-submodules
 make data-subset
 make pack-submission
 make test-submission
@@ -137,6 +140,8 @@ Let's walk through what you'll need to do, step-by-step. The overall process her
     ```bash
     $ make pull
     ```
+
+2. Check out the `vsc2022` codebase as a submodule
 
 2. ⚙️ **Develop your model.**  
 
@@ -237,7 +242,7 @@ If you want to use a package that is not in the environment, you are welcome to 
 
 To submit a pull request for a new package:
 
-1. Fork this repository.
+1. Fork this repository, and in your fork ensure you have the submodules checked out and updated by running `make update-submodules`. Having the `vsc2022` repository fully checked out as a submodule is necessary for the build process to complete successfully.
 
 2. Edit the [conda](https://docs.conda.io/en/latest/) environment YAML files, `runtime/environment-cpu.yml` and `runtime/environment-gpu.yml`. There are two ways to add a requirement:
     - Add an entry to the `dependencies` section. This installs from a conda channel using `conda install`. Conda performs robust dependency resolution with other packages in the `dependencies` section, so we can avoid package version conflicts.
