@@ -186,7 +186,7 @@ Your workflow might look something like this:
 * Running inference on the training query and reference datasets to generate descriptors
 * Adapting `main.py` to call
     * Note: Within the code execution runtime, the conda environment is accessible to commands run via `subprocess` by including the prefix `conda run --no-capture-output -n condaenv [command]`, so your `main.py` might include a `subprocess` call to something that looks like:
-    ```python
+    ```sh
     conda run --no-capture-output -n condaenv python -m vsc.baseline.inference
         --torchscript_path "/code_execution/vsc2022/vsc/baseline/adapted_sscd_disc_mixup.torchscript.pt"
         --accelerator=cuda --processes="1"
