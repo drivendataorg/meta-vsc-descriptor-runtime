@@ -3,10 +3,10 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-ROOT_DIRECTORY = Path(__file__).parent
-QUERY_OUTPUT_FILE = ROOT_DIRECTORY / "query_descriptors.npz"
-REFERENCE_OUTPUT_FILE = ROOT_DIRECTORY / "reference_descriptors.npz"
-DATA_DIRECTORY = ROOT_DIRECTORY.parent / "data"
+QUICKSTART_DIRECTORY = Path(__file__).parent.parent / "submission_quickstart"
+QUERY_OUTPUT_FILE = QUICKSTART_DIRECTORY / "query_descriptors.npz"
+REFERENCE_OUTPUT_FILE = QUICKSTART_DIRECTORY / "reference_descriptors.npz"
+DATA_DIRECTORY = QUICKSTART_DIRECTORY.parent / "data"
 QUERY_METADATA_PATH = DATA_DIRECTORY / "query_metadata.csv"
 REFERENCE_METADATA_PATH = DATA_DIRECTORY / "reference_metadata.csv"
 
