@@ -1,5 +1,5 @@
 # syntax = docker/dockerfile:1.2
-FROM nvidia/cuda:11.0.3-base-ubuntu20.04
+FROM nvidia/cuda:11.3.1-base-ubuntu20.04
 # adapated from build file for pangeo images
 # https://github.com/pangeo-data/pangeo-docker-images
 
@@ -76,6 +76,7 @@ RUN mamba env create --name ${CONDA_ENV} -f /home/${RUNTIME_USER}/environment.ym
 USER root
 # Copy necessary files from VSC2022 repo
 COPY vsc2022/vsc /opt/vsc
+RUN rm -rf /opt/vsc/baseline /opt/vsc/__pycache__
 COPY vsc2022/descriptor_eval.py /opt/descriptor_eval.py
 WORKDIR /code_execution
 RUN mkdir predictions submission
