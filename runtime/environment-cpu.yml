@@ -9,7 +9,6 @@ dependencies:
   - fastai::fastai=2.7.10
   - ffmpeg-python=0.2.0
   - h5py=3.7.0
-  - lightning-flash[video,image]=0.8.1
   - loguru=0.6.0
   - matplotlib=3.6.2
   - networkx=2.8.8
@@ -29,8 +28,10 @@ dependencies:
   - scikit-image=0.19.3
   - scikit-learn=1.1.3
   - scipy=1.9.3
-  - tensorflow-cpu=2.9.1
+  - setuptools=59.5.0
   - tqdm=4.64.1
   - tslearn=0.5.2
   - pip: 
     - augly[image,video]==1.0.0
+    - lightning-flash[video,image]==0.8.1
+    - tensorflow-cpu==2.9.1
