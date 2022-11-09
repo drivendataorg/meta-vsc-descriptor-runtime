@@ -3,17 +3,17 @@
 
 # Meta Video Similarity Challenge: Descriptor Track Code Execution Runtime
 
-[![Meta Video Similarity Competition](TKTK)](TKTK)
+[![Meta Video Similarity Competition](https://img.shields.io/badge/DrivenData%20Challenge-Meta%20Video%20Similarity-white?logo=data:image/png;base64,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)](https://www.drivendata.org/competitions/group/meta-video-similarity/)
 ![Python 3.9.13](https://img.shields.io/badge/Python-3.9.13-blue)
-[![Build and publish image](TKTK)](TKTK)
+[![Build and publish image](https://github.com/drivendataorg/meta-vsc-descriptor-runtime/actions/workflows/build-images.yml/badge.svg?branch=main)](https://github.com/drivendataorg/meta-vsc-descriptor-runtime/actions/workflows/build-images.yml?query=main)
 
-Welcome to the runtime repository for the [Meta Video Similarity Competition](https://www.drivendata.org/competitions/101/meta-video-similarity-descriptor/page/570/)!
+Welcome to the runtime repository for the [Meta Video Similarity Competition](https://www.drivendata.org/competitions/101/meta-video-similarity-descriptor/)!
 
-This repository contains the definition of the environment where your code submissions will run. It specifies both the operating system and the software packages that will be available to your solution.
+As mentioned in the [Problem Description](https://www.drivendata.org/competitions/101/meta-video-similarity-descriptor/page/579/) and [Code Submission Format](https://www.drivendata.org/competitions/101/meta-video-similarity-descriptor/page/580/) pages, this competition is a **hybrid code execution** competition. This means that you will submit **both** the full set of query and reference descriptors that you generate for videos in the test set **as well as** the code that generates those descriptors. This repository contains the definition of the environment where your code submissions will run on a subset of videos in the query set to ensure that your submission meets the given resource constraints. It specifies both the operating system and the software packages that will be available to your solution.
 
 This repository has three primary uses for competitors:
 
-1. 💡 **[Quickstart example](https://github.com/drivendataorg/meta-vsc-descriptor-runtime/tree/main/submission_quickstart):** A minimal code example that runs successfully in the runtime environment and outputs a properly formatted submission CSV. This will generate arbitrary predictions, so unfortunately you won't win the competition with this example, but you can use it as a guide for bringing in your own work and generating a real submission.
+1. 💡 **[Quickstart example](https://github.com/drivendataorg/meta-vsc-descriptor-runtime/tree/main/submission_quickstart):** A minimal code example that runs successfully in the runtime environment and outputs a properly formatted submission tarfile. This will generate random descriptors, so unfortunately you won't win the competition with this example, but you can use it as a guide for bringing in your own work and generating a real submission.
 2. 🔧 **Test your submission**: Test your submission with a locally running version of the container to discover errors before submitting to the competition site.
 3. 📦 **Request new packages in the official runtime**: Since the Docker container will not have network access, all packages must be pre-installed. If you want to use a package that is not in the runtime environment, make a pull request to this repository.
 
@@ -28,6 +28,7 @@ This repository has three primary uses for competitors:
  - [Logging](#logging)
  - [Scoring your submission](#scoring-your-submission)
 ### [Additional information](#additional-information)
+ - [Benchmark](#benchmark)
  - [Runtime network access](#runtime-network-access)
  - [CPU and GPU](#cpu-and-gpu)
  - [Make commands](#make-commands)
@@ -47,17 +48,56 @@ This section guides you through the steps to generate a simple but valid submiss
 First, make sure you have the prerequisites installed.
 
  - A clone or fork of this repository
- - At least 13 GB (_todo: double check with final image_) of free space for the Docker container images, and additional free space for storing the videos from the training set you'll use as your local test set.
+ - At least 12 GB of free space for the Docker container images, and an additional 79GB of free space for storing the videos from the training set you'll use as your local test set (163GB if you download the entire dataset including the test set).
  - [Docker](https://docs.docker.com/get-docker/)
  - [GNU make](https://www.gnu.org/software/make/) (optional, but useful for running commands in the Makefile)
+
+ ### Download the data
+
+ Download the competition data to the `competition_data` by following the instructions on the [data download page](https://www.drivendata.org/competitions/101/meta-video-similarity-descriptor/data/). Once everything is downloaded and in the right location, it should look like this:
+   
+   ```
+   competition_data/                # Runtime data directory
+   ├── train/                       # Directory containing the training set
+   │   ├── query_metadata.csv       # Training set metadata file
+   │   ├── reference_metadata.csv   # Training set metadata file
+   │   ├── ground_truth.csv         # Training set ground truth file
+   │   ├── query/                   # Directory containing the test set query videos
+   │   │   ├── Q10000.mp4
+   │   │   ├── Q10001.mp4
+   │   │   ├── Q10002.mp4
+   │   │   └── ...
+   │   └── reference/               # Directory containing the test set reference videos
+   │       ├── R100000.mp4
+   │       ├── R100001.mp4
+   │       ├── R100002.mp4
+   │       └── ...
+   │
+   └── test/                        # Directory containing the test set
+   │   ├── query_metadata.csv       # Test set query metadata file
+   │   ├── reference_metadata.csv   # Test set reference metadata file
+       ├── query/                   # Directory containing the test set query videos
+       │   ├── Q20000.mp4
+       │   ├── Q20001.mp4
+       │   ├── Q20002.mp4
+       │   └── ...
+       └── reference/               # Directory containing the test set reference videos
+           ├── R200000.mp4
+           ├── R200001.mp4
+           ├── R200002.mp4
+           └── ...
+   ```
+
+If you are competing in both tracks of the competition, you can symlink `competition_data` to a single folder where you have all the competition data stored to avoid having two copies of a large dataset.
 
 ### Run Make commands
 
 To test out the full execution pipeline, make sure Docker is running and then run the following commands in the terminal:
 
 1. **`make pull`** pulls the latest official Docker image from the container registry ([Azure](https://azure.microsoft.com/en-us/services/container-registry/)). You'll need an internet connection for this.
-2. **`make pack-quickstart`** generates valid, random descriptors for the full query and reference sets, and then zips the contents of the `submission_quickstart` directory and saves it as `submission/submission.zip`. The `submission.zip` file will contain both the `.npz` and `main.py` files, and is what you will upload to the DrivenData competition site for code execution. But first we'll test that everything looks good locally (see next step).
-3. **`make test-submission`** will do a test run of your submission, simulating what happens during actual code execution. This command runs the Docker container with the requisite host directories mounted, and executes `main.py` to produce a tar file with your rankings for the full set and subset. 
+2. **`make data-subset`** generates and copies a subset of the `competition_data/train` dataset into the `data` folder in exactly the format it will exist in the code execution environment. By default, this will copy over videos and metadata from the training set, but you can modify both the proportion of videos copied and the source by editing the `Makefile`. 
+3. **`make pack-quickstart`** generates valid, random descriptors for the full query and reference sets, and then zips the contents of the `submission_quickstart` directory and saves it as `submission/submission.zip`. The `submission.zip` file will contain both the `.npz` and `main.py` files, and is what you will upload to the DrivenData competition site for code execution. But first we'll test that everything looks good locally (see next step).
+4. **`make test-submission`** will do a test run of your submission, simulating what happens during actual code execution. This command runs the Docker container with the requisite host directories mounted, and executes `main.py` to produce a tar file with your rankings for the full set and subset. 
 
 ```bash
 make pull
