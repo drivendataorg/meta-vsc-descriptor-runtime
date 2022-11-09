@@ -8,13 +8,13 @@ ROOT_DIRECTORY = Path("/code_execution")
 DATA_DIRECTORY = Path("/data")
 OUTPUT_FILE = ROOT_DIRECTORY / "submission" / "runtime_query_descriptors.npz"
 
+
 def generate_query_descriptors(query_video_ids) -> np.ndarray:
     raise NotImplementedError(
         "This script is just a template. You should adapt it with your own code."
     )
-    result_images = ...
-    scores = ...
-    return result_images, scores
+    return video_ids, descriptors, timestamp_intervals
+
 
 def main():
     # Loading subset of query images
