@@ -24,12 +24,18 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - uses: actions/checkout@v3
+        with:
+          repository: facebookresearch/vsc2022
+          ssh-key: {{ secrets.SSH_PRIVATE_KEY }}
+
       - name: Build Image
         run: |
           docker build runtime \
             --build-arg CPU_OR_GPU=${{ matrix.proc }} \
             --tag $LOGIN_SERVER/$IMAGE:$SHA_TAG \
-            --tag $LOGIN_SERVER/$IMAGE:$LATEST_TAG
+            --tag $LOGIN_SERVER/$IMAGE:$LATEST_TAG \
+            -f runtime/Dockerfile .
 
       - name: Check image size
         run: |
