@@ -59,12 +59,10 @@ build:
 		-t ${LOCAL_IMAGE} \
 		-f runtime/Dockerfile .
 
-# Fetch all submodules (vsc2022 and VCSL)
-fetch-submodules:
-	git submodule update --init --recursive
-
+# Fetch or update all submodules (vsc2022 and VCSL)
 update-submodules:
-	git submodule update --remote
+	git pull && 
+	git submodule update --init --recursive
 
 ## Ensures that your locally built container can import all the Python packages successfully when it runs
 test-container: build _submission_write_perms
