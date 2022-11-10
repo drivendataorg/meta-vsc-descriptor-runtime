@@ -1,2 +1,0 @@
-augly[image,video]==1.0.0
-vidgear>=0.2.4

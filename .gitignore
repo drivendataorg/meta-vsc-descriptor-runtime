@@ -1,6 +1,9 @@
-submission.csv
 *.npz
 *.tar.gz
+*.pt
+submission/
+competition_data/
+data/
 
 ## Python.gitignore
 ## https://github.com/github/gitignore/blob/main/Python.gitignore

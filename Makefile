@@ -1,5 +1,4 @@
-.PHONY: build pull pack-benchmark pack-submission test-submission
-
+.PHONY: build pull pack-submission test-submission update-submodules data-train-subset data-test-subset
 # ================================================================================================
 # Settings
 # ================================================================================================
@@ -26,6 +25,8 @@ REPO = meta-vsc-descriptor-runtime
 REGISTRY_IMAGE = metavsc.azurecr.io/${REPO}:${TAG}
 LOCAL_IMAGE = ${REPO}:${LOCAL_TAG}
 CONTAINER_NAME = competition-meta-vsc
+
+SUBSET_PROPORTION?=0.01
 
 # if not TTY (for example GithubActions CI) no interactive tty commands for docker
 ifneq (true, ${GITHUB_ACTIONS_NO_TTY})
@@ -54,7 +55,15 @@ _submission_write_perms:
 
 ## Builds the container locally
 build:
-	docker buildx build --build-arg CPU_OR_GPU=${CPU_OR_GPU} -t ${LOCAL_IMAGE} --progress=plain runtime
+	docker build \
+		--build-arg CPU_OR_GPU=${CPU_OR_GPU} \
+		-t ${LOCAL_IMAGE} \
+		-f runtime/Dockerfile .
+
+## Fetch or update all submodules (vsc2022 and VCSL)
+update-submodules:
+	git pull && \
+	git submodule update --init --recursive
 
 ## Ensures that your locally built container can import all the Python packages successfully when it runs
 test-container: build _submission_write_perms
@@ -84,16 +93,8 @@ pack-quickstart:
 ifneq (,$(wildcard ./submission/submission.zip))
 	$(error You already have a submission/submission.zip file. Rename or remove that file (e.g., rm submission/submission.zip).)
 endif
-	python submission_quickstart/generate_valid_random_descriptors.py
+	python scripts/generate_valid_random_descriptors.py && \
 	cd submission_quickstart; zip -r ../submission/submission.zip main.py query_descriptors.npz reference_descriptors.npz
-
-## Creates a submission/submission.zip file from the source code in submission_benchmark
-pack-benchmark:
-# Don't overwrite so no work is lost accidentally
-ifneq (,$(wildcard ./submission/submission.zip))
-	$(error You already have a submission/submission.zip file. Rename or remove that file (e.g., rm submission/submission.zip).)
-endif
-	cd benchmark_src; zip -r ../submission/submission.zip ./*
 
 ## Creates a submission/submission.zip file from the source code in submission_src
 pack-submission:
@@ -128,6 +129,18 @@ endif
 		--name ${CONTAINER_NAME} \
 		--rm \
 		${SUBMISSION_IMAGE}
+
+## Adds training set video metadata, ground truth, and a subset of training query videos to `data`
+data-train-subset: _clean_data_folder
+	python scripts/generate_data_subset.py --dataset train --subset_proportion ${SUBSET_PROPORTION}
+
+## Adds test set video metadata and a subset of test set query videos to `data`
+data-test-subset: _clean_data_folder
+	python scripts/generate_data_subset.py --dataset test --subset_proportion ${SUBSET_PROPORTION}
+
+_clean_data_folder: 
+	rm -f data/*.csv data/queries/*.mp4
+
 
 ## Delete temporary Python cache and bytecode files
 clean:

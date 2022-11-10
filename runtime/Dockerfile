@@ -1,5 +1,5 @@
 # syntax = docker/dockerfile:1.2
-FROM nvidia/cuda:11.0.3-base-ubuntu20.04
+FROM nvidia/cuda:11.3.1-base-ubuntu20.04
 # adapated from build file for pangeo images
 # https://github.com/pangeo-data/pangeo-docker-images
 
@@ -37,7 +37,7 @@ RUN echo "Creating ${RUNTIME_USER} user..." \
 
 # Install base packages
 ARG DEBIAN_FRONTEND=noninteractive
-COPY ./apt.txt /home/${RUNTIME_USER}
+COPY ./runtime/apt.txt /home/${RUNTIME_USER}
 RUN rm -f /etc/apt/sources.list.d/cuda.list && rm -f /etc/apt/sources.list.d/nvidia-ml.list
 RUN echo "Installing base packages..." \
     && apt-get update --fix-missing \
@@ -63,23 +63,23 @@ RUN echo "Installing Miniforge..." \
     && find ${CONDA_DIR} -follow -type f -name '*.pyc' -delete
 
 # Switch back to root for installing conda packages
-COPY environment-${CPU_OR_GPU}.yml /home/${RUNTIME_USER}/environment.yml
-COPY requirements.txt /home/${RUNTIME_USER}/requirements.txt
+COPY ./runtime/environment-${CPU_OR_GPU}.yml /home/${RUNTIME_USER}/environment.yml
 RUN mamba env create --name ${CONDA_ENV} -f /home/${RUNTIME_USER}/environment.yml  \
     && mamba clean -afy \
-    && conda run --no-capture-output -n ${CONDA_ENV} pip install --no-deps -r /home/${RUNTIME_USER}/requirements.txt \
     && conda run pip cache purge \
     && rm /home/${RUNTIME_USER}/environment.yml \
-    && rm /home/${RUNTIME_USER}/requirements.txt \
     && find ${CONDA_DIR} -follow -type f -name '*.a' -delete \
     && find ${CONDA_DIR} -follow -type f -name '*.pyc' -delete \
     && find ${CONDA_DIR} -follow -type f -name '*.js.map' -delete
 
 # Copy run script into working dir and set it as the working doie
 USER root
-COPY scoring /opt/scoring
+# Copy necessary files from VSC2022 repo
+COPY vsc2022/vsc/*.py /opt/vsc/
+COPY vsc2022/descriptor_eval.py /opt/descriptor_eval.py
+COPY vsc2022/LICENSE /opt/LICENSE
 WORKDIR /code_execution
 RUN mkdir predictions submission
-COPY --chown=appuser:appuser tests /code_execution/tests
-COPY --chown=appuser:appuser entrypoint.sh /code_execution/entrypoint.sh
+COPY --chown=appuser:appuser ./runtime/tests /code_execution/tests
+COPY --chown=appuser:appuser ./runtime/entrypoint.sh /code_execution/entrypoint.sh
 CMD ["/bin/bash", "/code_execution/entrypoint.sh"]

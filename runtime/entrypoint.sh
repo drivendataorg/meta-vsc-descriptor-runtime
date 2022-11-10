@@ -27,13 +27,14 @@ exit_code=0
         then
             echo "Running similarity search to generate subset rankings for scoring..."
             conda run --no-capture-output -n condaenv \
-                python /opt/scoring/generate_rankings.py \
-                subset_query_descriptors.npz reference_descriptors.npz \
-                subset_rankings.csv
+                python /opt/descriptor_eval.py \
+                --query_features subset_query_descriptors.npz \
+                --ref_features reference_descriptors.npz \
+                --candidates_output subset_rankings.csv
             echo "... finished"
             else
                 echo "WARNING: Could not find generated subset_query_descriptors.npz or find reference_descriptors.npz in submission.zip"
-                echo "query_id,reference_id,score" >> subset_rankings.csv
+                echo "query_id,ref_id,score" >> subset_rankings.csv
         fi
 	    echo "... finished"
 
@@ -47,9 +48,10 @@ exit_code=0
     then
         echo "Running similarity search to generate rankings for scoring..."
         conda run --no-capture-output -n condaenv \
-            python /opt/scoring/generate_rankings.py \
-            query_descriptors.npz reference_descriptors.npz \
-            full_rankings.csv
+            python /opt/descriptor_eval.py \
+            --query_features query_descriptors.npz \
+            --ref_features reference_descriptors.npz \
+            --candidates_output full_rankings.csv
 	    echo "... finished"
         else
             echo "ERROR: Could not find query_descriptors.npz or reference_descriptors.npz in submission.zip"
