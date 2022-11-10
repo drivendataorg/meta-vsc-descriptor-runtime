@@ -1,5 +1,4 @@
-.PHONY: build pull pack-submission test-submission update-submodules data-subset
-
+.PHONY: build pull pack-submission test-submission update-submodules data-train-subset data-test-subset
 # ================================================================================================
 # Settings
 # ================================================================================================
@@ -26,6 +25,8 @@ REPO = meta-vsc-descriptor-runtime
 REGISTRY_IMAGE = metavsc.azurecr.io/${REPO}:${TAG}
 LOCAL_IMAGE = ${REPO}:${LOCAL_TAG}
 CONTAINER_NAME = competition-meta-vsc
+
+SUBSET_PROPORTION?=0.01
 
 # if not TTY (for example GithubActions CI) no interactive tty commands for docker
 ifneq (true, ${GITHUB_ACTIONS_NO_TTY})
@@ -59,7 +60,7 @@ build:
 		-t ${LOCAL_IMAGE} \
 		-f runtime/Dockerfile .
 
-# Fetch or update all submodules (vsc2022 and VCSL)
+## Fetch or update all submodules (vsc2022 and VCSL)
 update-submodules:
 	git pull && \
 	git submodule update --init --recursive
@@ -129,9 +130,17 @@ endif
 		--rm \
 		${SUBMISSION_IMAGE}
 
-data-subset:
-	rm -f data/*.csv data/queries/*.mp4 && \
-	python scripts/generate_data_subset.py --dataset train --subset_fraction 0.01
+## Adds training set video metadata, ground truth, and a subset of training query videos to `data`
+data-train-subset: _clean_data_folder
+	python scripts/generate_data_subset.py --dataset train --subset_proportion ${SUBSET_PROPORTION}
+
+## Adds test set video metadata and a subset of test set query videos to `data`
+data-test-subset: _clean_data_folder
+	python scripts/generate_data_subset.py --dataset test --subset_proportion ${SUBSET_PROPORTION}
+
+_clean_data_folder: 
+	rm -f data/*.csv data/queries/*.mp4
+
 
 ## Delete temporary Python cache and bytecode files
 clean:

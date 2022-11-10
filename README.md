@@ -57,34 +57,35 @@ First, make sure you have the prerequisites installed.
 
  ### Download the data
 
- Download the competition data to the `competition_data` by following the instructions on the [data download page](https://www.drivendata.org/competitions/101/meta-video-similarity-descriptor/data/). Once everything is downloaded and in the right location, it should look like this:
+ Download the competition data into the `competition_data` folder by following the instructions on the [data download page](https://www.drivendata.org/competitions/101/meta-video-similarity-descriptor/data/). Once everything is downloaded and in the right location, it should look like this:
    
    ```
-   competition_data/                # Runtime data directory
-   ├── train/                       # Directory containing the training set
-   │   ├── query_metadata.csv       # Training set metadata file
-   │   ├── reference_metadata.csv   # Training set metadata file
-   │   ├── ground_truth.csv         # Training set ground truth file
-   │   ├── query/                   # Directory containing the test set query videos
-   │   │   ├── Q10000.mp4
-   │   │   ├── Q10001.mp4
-   │   │   ├── Q10002.mp4
+   competition_data/                    # Competition data directory
+   ├── train/                           # Directory containing the training set
+   │   ├── query_metadata.csv           # Training set metadata file
+   │   ├── reference_metadata.csv       # Training set metadata file
+   │   ├── descriptor_ground_truth.csv  # Training set ground truth file
+   │   ├── matching_ground_truth.csv    # Training set ground truth file
+   │   ├── query/                       # Directory containing the test set query videos
+   │   │   ├── Q100001.mp4
+   │   │   ├── Q100002.mp4
+   │   │   ├── Q100003.mp4
    │   │   └── ...
-   │   └── reference/               # Directory containing the test set reference videos
+   │   └── reference/                   # Directory containing the test set reference videos
    │       ├── R100000.mp4
    │       ├── R100001.mp4
    │       ├── R100002.mp4
    │       └── ...
    │
-   └── test/                        # Directory containing the test set
-   │   ├── query_metadata.csv       # Test set query metadata file
-   │   ├── reference_metadata.csv   # Test set reference metadata file
-       ├── query/                   # Directory containing the test set query videos
-       │   ├── Q20000.mp4
-       │   ├── Q20001.mp4
-       │   ├── Q20002.mp4
+   └── test/                            # Directory containing the test set
+       ├── query_metadata.csv           # Test set query metadata file
+       ├── reference_metadata.csv       # Test set reference metadata file
+       ├── query/                       # Directory containing the test set query videos
+       │   ├── Q200001.mp4
+       │   ├── Q200002.mp4
+       │   ├── Q200003.mp4
        │   └── ...
-       └── reference/               # Directory containing the test set reference videos
+       └── reference/                   # Directory containing the test set reference videos
            ├── R200000.mp4
            ├── R200001.mp4
            ├── R200002.mp4
@@ -98,20 +99,20 @@ If you are competing in both tracks of the competition, you can symlink `competi
 To test out the full execution pipeline, make sure Docker is running and then run the following commands in the terminal:
 
 1. **`make pull`** pulls the latest official Docker image from the container registry ([Azure](https://azure.microsoft.com/en-us/services/container-registry/)). You'll need an internet connection for this.
-2. **`make data-subset`** generates and copies a subset of the `competition_data/train` dataset into the `data` folder in the format it will exist in the code execution environment. By default, this will copy over videos and metadata from the training set, but you can modify both the proportion of videos copied and the source by editing the `Makefile`. Note that the subset of videos you will generate is different from the subset specified at runtime.
-3. **`make pack-quickstart`** generates valid, random descriptors for the full query and reference sets, and then zips the contents of the `submission_quickstart` directory (including the `main.py` script which also generates random descriptors) and saves it as `submission/submission.zip`. The `submission.zip` file will contain both the `.npz` and `main.py` files, and is what you will upload to the DrivenData competition site for code execution. But first we'll test that everything looks good locally (see next step).
+2. **`make data-train-subset`** generates and copies a subset of the `competition_data/train` dataset into the `data` folder in the format it will exist in the code execution environment. By default, this will copy over 1% of the training set query videos, but you can modify the proportion of videos copied by editing the `Makefile` variable `SUBSET_PROPORTION` or by providing a value when you issue the command, e.g., `make SUBSET_PROPORTION=0.1 data-train-subset`. When your code runs in the competition's code execution environment, it will generate descriptors for approximately 10% of the test set query videos.
+3. **`make pack-quickstart`** generates valid, random descriptors for the full query and reference sets, and then zips the contents of the `submission_quickstart` directory (including the `main.py` script which generates random descriptors within the code execution environment) and saves it as `submission/submission.zip`. The `submission.zip` file will contain both the `.npz` and `main.py` files, and is what you will upload to the DrivenData competition site for code execution. But first we'll test that everything looks good locally (see next step).
 4. **`make test-submission`** will do a test run of your submission, simulating what happens during actual code execution. This command runs the Docker container with the requisite host directories mounted, and executes `main.py` to produce a tar file with your rankings for the full set and subset. 
 
 ```bash
 make pull
-make data-subset
+make data-train-subset
 make pack-quickstart
 make test-submission
 ```
 
-🎉 **Congratulations!** You've just completed your first test run for the Video Similarity Challenge Descriptor Track. If everything worked as expected, you should see a new file `submission/submission.tar.gz` has been generated. If you unpack this file, you should see a `full_rankings.csv` and a `subset_rankings.csv` csv file, each of which contains scored query-ref pairs that predict the video pairs most likely to have a derived content relationship based on your submitted descriptors. These rankings are generated from the [descriptor evaluation code](https://github.com/facebookresearch/vsc2022/blob/main/descriptor_eval.py) in Meta's [vsc2022 repository](https://github.com/facebookresearch/vsc2022)
+🎉 **Congratulations!** You've just completed your first test run for the Video Similarity Challenge Descriptor Track. If everything worked as expected, you should see a new file `submission/submission.tar.gz` has been generated. If you unpack this file, you should see a `full_rankings.csv` and a `subset_rankings.csv` csv file, each of which contains scored query-ref pairs that predict the video pairs most likely to have a derived content relationship based on your submitted descriptors. These rankings are generated from the [descriptor evaluation code](https://github.com/facebookresearch/vsc2022/blob/main/descriptor_eval.py) in Meta's [vsc2022 repository](https://github.com/facebookresearch/vsc2022), also included as a submodule in this repository.
 
-If you were ready to make a real submission to the competition, you would upload the `submission.zip` file from step 2 above to the competition [Submissions page](https://www.drivendata.org/competitions/101/meta-video-similarity-descriptor/submissions/). The `submission.tar.gz` that is written out during code execution will get **scored** automatically using the [competition scoring metric](https://www.drivendata.org/competitions/101/meta-video-similarity-descriptor/page/579/#metric) to determine your rank on the leaderboard.
+If you were ready to make a real submission to the competition, you would upload the `submission.zip` file from step 2 above to the competition [Submissions page](https://www.drivendata.org/competitions/101/meta-video-similarity-descriptor/submissions/). The `submission.tar.gz` that is written out during code execution will get unpacked on our platform and each set of rankings will be **scored** automatically using the [competition scoring metric](https://www.drivendata.org/competitions/101/meta-video-similarity-descriptor/page/579/#metric) to determine your rank on the leaderboard.
 
 ----
 
@@ -125,9 +126,8 @@ This section provides instructions on how to develop and run your code submissio
 
 ```
 make pull
-make update-submodules
-make data-subset
 make pack-submission
+make data-test-subset
 make test-submission
 ```
 
@@ -141,15 +141,14 @@ Let's walk through what you'll need to do, step-by-step. The overall process her
     $ make pull
     ```
 
-2. Check out the `vsc2022` codebase as a submodule
-
 2. ⚙️ **Develop your model.**  
 
    Keep in mind that the runtime already contains a number of packages that might be useful for you ([cpu](https://github.com/drivendataorg/meta-vsc-descriptor-runtime/blob/main/runtime/environment-cpu.yml) and [gpu](https://github.com/drivendataorg/meta-vsc-descriptor-runtime/blob/main/runtime/environment-gpu.yml) versions). If there are other packages you'd like added, see the section below on [updating runtime packages](#updating-runtime-packages).
 
-3. **Save your `.npz` descriptor files and `main.py` script in the `submission_src` folder of the runtime repository.**
+3. **Save your `.npz` descriptor files for test set query and reference videos and your `main.py` script in the `submission_src` folder of the runtime repository.**
    * Working off the `main.py` template we've provided, you'll want to add code as necessary to process the queries, cache intermediate results as necessary, and write out your descriptors.
    * Make sure any model weights or other files you need are also saved in `submission_src` (you can include these in that folder or in a subfolder, e.g., `submission_src/model_assets`)
+   * Your query descriptors should be in a file named `query_descriptors.npz` and your reference descriptors in a file named `reference_descriptors.npz`.
 
 4. **Create a `submission/submission.zip` file containing your code and model assets:**
 
@@ -159,7 +158,11 @@ Let's walk through what you'll need to do, step-by-step. The overall process her
       adding: main.py (deflated 50%)
     ```
 
-5. **Test your submission with `make test-submission`** 
+5. **Generate a runtime data subset with `make data-test-subset`**. 
+
+    Similar to `make data-train-subset` we used when making the quickstart solution, this command will copy a subset of the test set query videos into the `data/` folder in the same structure that will exist in the code execution environment. You can change the proportion of subset videos by editing the `Makefile` variable `SUBSET_PROPORTION` or by specifying a value when you issue the command, e.g., `make SUBSET_PROPORTION=0.1 data-test-subset`.
+
+6. **Test your submission with `make test-submission`** 
 
     This command launches an instance of the competition Docker image, simulating the same process that will take place in the official code execution runtime.** The requisite host directories will be mounted on the Docker container, `submission/submission.zip` will be unzipped into the root directory of the container, and `main.py` will be executed to produce your subset rankings.
 
@@ -168,17 +171,16 @@ Let's walk through what you'll need to do, step-by-step. The overall process her
    ```
 
 
-> ⚠️ **Remember** in the official code execution environment, `/data` will contain just the subset of test set videos a and full metadata CSV files for the query and reference sets. When testing locally, the `/data` directory is a mounted version of whatever you have saved locally in this project's `data` directory. `make data-subset` generates a `data` directory that matches what will exist in the execution environment.
+> ⚠️ **Remember** in the official code execution environment, `/data` will contain just the subset of test set query videos along with the full metadata CSV files for the test query and reference sets. When testing locally, the `/data` directory is a mounted version of whatever you have saved locally in this project's `data/` directory. `make data-train-subset` and `make data-test-subset` adds the appropriate metadata files and video files to the local `data/` directory - make sure the data subset you are mounting to the container corresponds to the full set of descriptors you are packing in your submission.
 
+## Logging
 
-### Logging
-
-When you run `make test-submission` the logs will be printed to the terminal and written out to `submission/log.txt`. If you run into errors, use the `log.txt` to determine what changes you need to make for your code to execute successfully. Note that the log messages generated by `tqdm` on a submission to the platform will not by default log until the interations have completed.
+When you run `make test-submission` the logs will be printed to the terminal and written out to `submission/log.txt`. If you run into errors, use the `log.txt` to determine what changes you need to make for your code to execute successfully. Note that the log messages generated by `tqdm` on a submission to the platform will not by default log until all the interations have completed.
 
 
 ## Getting Started: the `vsc2022` repository
 
-As part of this competition, our partners at Meta have made a benchmark solution available in the [vsc2022](https://github.com/facebookresearch/vsc2022) repository. You are encouraged to use this benchmark solution as a starting point for your own solution if you wish.
+As part of this competition, our partners at Meta have made a benchmark solution available in the [vsc2022](https://github.com/facebookresearch/vsc2022) repository. You are encouraged to use this benchmark solution as a starting point for your own solution if you so choose.
 
 ### A working benchmark solution
 
@@ -189,7 +191,7 @@ Your workflow might look something like this:
 * Cloning and recursively updating submodules for the `vsc2022` repo into `submission_src`
 * Downloading and transforming the sscd model into `submission_src/model_assets/`
 * Running inference on the training query and reference datasets to generate descriptors
-* Adapting `main.py` to call
+* Adapting `main.py` to run infererence on the runtime data subset
     * Note: Within the code execution runtime, the conda environment is accessible to commands run via `subprocess` by including the prefix `conda run --no-capture-output -n condaenv [command]`, so your `main.py` might include a `subprocess` call to something that looks like:
     ```sh
     conda run --no-capture-output -n condaenv python -m vsc.baseline.inference
@@ -198,15 +200,16 @@ Your workflow might look something like this:
         --dataset_path "{QUERY_SUBSET_VIDEOS_FOLDER}"
         --output_file "{OUTPUT_FILE}"
     ```
+* Adapting or extending the repo to improve the quality of your descriptors!
 
 ---
 ## Additional information
 
 ### Scoring your submission
 
-For convenience and consistency, the `vsc2022` repository, including the scoring scripts for both the descriptor track and the matching track, is included as a submodule of this runtime. The descriptor evaluation similarity search is also conducted by the code in this library. After cloning this repository, run `make update-submodules` to download the contents of `vsc2022` into the specified folder, and unpack the `submission.tar.gz` folder to obtain the generated rankings files to provide to `vsc2022/descriptor_eval.py`.
+For convenience and consistency, the `vsc2022` repository, including the scoring scripts for both the descriptor track and the matching track, is included as a submodule of this runtime. The descriptor evaluation similarity search is also conducted by the code in this library. After cloning this repository, run `make update-submodules` to download the contents of `vsc2022` into the specified folder. After running `make data-train-subset` and `make test-submission`, unpack the `submission.tar.gz` generated by your solution obtain the rankings files to provide to `vsc2022/descriptor_eval.py` along with the training set ground truth to obtain your score.
 
-> Note: When evaluating your generated subset submission on the training set, you should provide only the subset of the ground truth that contains the query videos in the subset.
+> Note: When evaluating your generated subset submission on the training set, you should provide only the subset of the ground truth entries that contains the query videos in the subset.
 
 ### Runtime network access
 
@@ -276,23 +279,24 @@ Running `make` at the terminal will tell you all the commands available in the r
 ❯ make
 
 Settings based on your machine:
-SUBMISSION_IMAGE=db463d9663ac   # ID of the image that will be used when running test-submission
+SUBMISSION_IMAGE=f5f61cef3987   # ID of the image that will be used when running test-submission
 
 Available competition images:
-meta-vsc-descriptor-runtime:gpu-local (f314bbf3beed); meta-vsc-descriptor-runtime:cpu-local (db463d9663ac);
+meta-vsc-descriptor-runtime:cpu-local (f5f61cef3987); meta-vsc-descriptor-runtime:gpu-local (f314bbf3beed);
 
 Available commands:
 
 build               Builds the container locally 
 clean               Delete temporary Python cache and bytecode files 
+data-test-subset    Adds test set video metadata and a subset of test set query videos to `data` 
+data-train-subset   Adds training set video metadata, ground truth, and a subset of training query videos to `data` 
 interact-container  Start your locally built container and open a bash shell within the running container; same as submission setup except has network access 
-pack-benchmark      Creates a submission/submission.zip file from the source code in submission_benchmark 
 pack-quickstart     Creates a submission/submission.zip file from the source code in submission_quickstart 
 pack-submission     Creates a submission/submission.zip file from the source code in submission_src 
 pull                Pulls the official container from Azure Container Registry 
 test-container      Ensures that your locally built container can import all the Python packages successfully when it runs 
-test-submission     Runs container using code from `submission/submission.zip` and data from `data/`
-
+test-submission     Runs container using code from `submission/submission.zip` and data from `data/` 
+update-submodules   Fetch or update all submodules (vsc2022 and VCSL) 
 ```
 
 ---

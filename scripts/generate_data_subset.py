@@ -8,8 +8,8 @@ import pandas as pd
 
 parser = ArgumentParser()
 parser.add_argument(
-    "--subset_fraction",
-    help="Fraction of data to include in subset",
+    "--subset_proportion",
+    help="Proportion of data to include in subset",
     type=float,
     default=0.01,
 )
@@ -45,18 +45,20 @@ def main(args: Namespace):
                 f"Error: {file} not found. Have you downloaded or symlinked the competition dataset into {competition_data_dir}?"
             )
 
-    p_subset = args.subset_fraction
+    p_subset = args.subset_proportion
 
     # Choose a random subset of query IDs to include
     rng = np.random.RandomState(42)
-    query_metadata = pd.read_csv(query_metadata)
-    subset_query_ids = query_metadata.video_id.sample(
-        int(np.ceil(query_metadata.shape[0] * p_subset)), random_state=rng
+    query_metadata_df = pd.read_csv(query_metadata)
+    subset_query_ids = query_metadata_df.video_id.sample(
+        int(np.ceil(query_metadata_df.shape[0] * p_subset)), random_state=rng
     )
 
     # Copy metadata files and chosen videoss
 
-    subset_query_ids.to_csv(RUNTIME_DATA_DIR / "query_subset.csv", index=False)
+    subset_query_ids.sort_values().to_csv(
+        RUNTIME_DATA_DIR / "query_subset.csv", index=False
+    )
     for query_id in subset_query_ids:
         copyfile(
             query_video_dir / f"{query_id}.mp4",
@@ -64,6 +66,14 @@ def main(args: Namespace):
         )
     copyfile(query_metadata, RUNTIME_DATA_DIR / query_metadata.name)
     copyfile(reference_metadata, RUNTIME_DATA_DIR / reference_metadata.name)
+
+    if args.dataset == "train":
+        train_ground_truth = dataset_folder / "descriptor_ground_truth.csv"
+        copyfile(train_ground_truth, RUNTIME_DATA_DIR / train_ground_truth.name)
+        ground_truth_subset_df = pd.read_csv(train_ground_truth).set_index("query_id")
+        ground_truth_subset_df.loc[
+            ground_truth_subset_df.index.isin(subset_query_ids)
+        ].to_csv(RUNTIME_DATA_DIR / "subset_ground_truth.csv")
 
 
 if __name__ == "__main__":

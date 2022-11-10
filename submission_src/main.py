@@ -6,7 +6,7 @@ import numpy as np
 
 ROOT_DIRECTORY = Path("/code_execution")
 DATA_DIRECTORY = Path("/data")
-OUTPUT_FILE = ROOT_DIRECTORY / "submission" / "runtime_query_descriptors.npz"
+OUTPUT_FILE = ROOT_DIRECTORY / "submission" / "subset_query_descriptors.npz"
 
 
 def generate_query_descriptors(query_video_ids) -> np.ndarray:
@@ -24,11 +24,10 @@ def main():
     query_subset = pd.read_csv(DATA_DIRECTORY / "query_subset.csv")
     query_subset_video_ids = query_subset.query_ids.values
 
-    ### Generation of query descriptors happens here ######
+    # Generation of query descriptors happens here #
     query_descriptors, query_video_ids, query_timestamps = generate_query_descriptors(
-        query_video_ids
+        query_subset_video_ids
     )
-    ##################################
 
     np.savez(
         OUTPUT_FILE,
