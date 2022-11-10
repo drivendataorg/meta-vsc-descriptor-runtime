@@ -54,6 +54,7 @@ First, make sure you have the prerequisites installed.
  - At least 12 GB of free space for the Docker container images, and an additional 79GB of free space for storing the videos from the training set you'll use as your local test set (163GB if you download the entire dataset including the test set).
  - [Docker](https://docs.docker.com/get-docker/)
  - [GNU make](https://www.gnu.org/software/make/) (optional, but useful for running commands in the Makefile)
+ - A python environment with `requirements.txt` installed
 
  ### Download the data
 
