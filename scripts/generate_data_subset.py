@@ -29,7 +29,7 @@ def main(args: Namespace):
     # Ensure that data has been downloaded to the correct place
     competition_data_dir = Path("competition_data")
     dataset_folder = competition_data_dir / args.dataset
-    query_video_dir = dataset_folder / "queries"
+    query_video_dir = dataset_folder / "query"
 
     query_metadata = dataset_folder / "query_metadata.csv"
     reference_metadata = dataset_folder / "reference_metadata.csv"
