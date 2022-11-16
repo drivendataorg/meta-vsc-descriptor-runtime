@@ -25,6 +25,15 @@ exit_code=0
         # to generate similarity rankings
         if [[ -f "subset_query_descriptors.npz" && -f "reference_descriptors.npz" ]]
         then
+            echo "Validating submission..."
+            conda run --no-capture-output -n condaenv \
+                python /opt/validation.py \
+                --query_features subset_query_descriptors.npz \
+                --ref_features reference_descriptors.npz \
+                --query_metadata /data/query_metadata.csv \
+                --ref_metadata /data/reference_metadata.csv \
+                --subset /data/query_subset.csv
+
             echo "Running similarity search to generate subset rankings for scoring..."
             conda run --no-capture-output -n condaenv \
                 python /opt/descriptor_eval.py \
@@ -32,6 +41,7 @@ exit_code=0
                 --ref_features reference_descriptors.npz \
                 --candidates_output subset_rankings.csv
             echo "... finished"
+
             else
                 echo "WARNING: Could not find generated subset_query_descriptors.npz or find reference_descriptors.npz in submission.zip"
                 echo "query_id,ref_id,score" >> subset_rankings.csv
@@ -46,6 +56,14 @@ exit_code=0
     # Generate full rankings from submitted descriptors via a similarity search
     if [[ -f "query_descriptors.npz" && -f "reference_descriptors.npz" ]]
     then
+        echo "Validating submission..."
+        conda run --no-capture-output -n condaenv \
+            python /opt/validation.py \
+            --query_features query_descriptors.npz \
+            --ref_features reference_descriptors.npz \
+            --query_metadata /data/query_metadata.csv \
+            --ref_metadata /data/reference_metadata.csv
+
         echo "Running similarity search to generate rankings for scoring..."
         conda run --no-capture-output -n condaenv \
             python /opt/descriptor_eval.py \
