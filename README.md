@@ -62,32 +62,32 @@ First, make sure you have the prerequisites installed.
  Download the competition data into the `competition_data` folder by following the instructions on the [data download page](https://www.drivendata.org/competitions/101/meta-video-similarity-descriptor/data/). Once everything is downloaded and in the right location, it should look like this:
    
    ```
-   competition_data/                    # Competition data directory
-   ├── train/                           # Directory containing the training set
-   │   ├── query_metadata.csv           # Training set metadata file
-   │   ├── reference_metadata.csv       # Training set metadata file
-   │   ├── descriptor_ground_truth.csv  # Training set ground truth file
-   │   ├── matching_ground_truth.csv    # Training set ground truth file
-   │   ├── query/                       # Directory containing the test set query videos
+   competition_data/                          # Competition data directory
+   ├── train/                                 # Directory containing the training set
+   │   ├── train_query_metadata.csv           # Training set metadata file
+   │   ├── train_reference_metadata.csv       # Training set metadata file
+   │   ├── train_descriptor_ground_truth.csv  # Training set ground truth file
+   │   ├── train_matching_ground_truth.csv    # Training set ground truth file
+   │   ├── query/                             # Directory containing the test set query videos
    │   │   ├── Q100001.mp4
    │   │   ├── Q100002.mp4
    │   │   ├── Q100003.mp4
    │   │   └── ...
-   │   └── reference/                   # Directory containing the test set reference videos
+   │   └── reference/                         # Directory containing the test set reference videos
    │       ├── R100000.mp4
    │       ├── R100001.mp4
    │       ├── R100002.mp4
    │       └── ...
    │
-   └── test/                            # Directory containing the test set
-       ├── query_metadata.csv           # Test set query metadata file
-       ├── reference_metadata.csv       # Test set reference metadata file
-       ├── query/                       # Directory containing the test set query videos
+   └── test/                                  # Directory containing the test set
+       ├── test_query_metadata.csv            # Test set query metadata file
+       ├── test_reference_metadata.csv        # Test set reference metadata file
+       ├── query/                             # Directory containing the test set query videos
        │   ├── Q200001.mp4
        │   ├── Q200002.mp4
        │   ├── Q200003.mp4
        │   └── ...
-       └── reference/                   # Directory containing the test set reference videos
+       └── reference/                         # Directory containing the test set reference videos
            ├── R200000.mp4
            ├── R200001.mp4
            ├── R200002.mp4
