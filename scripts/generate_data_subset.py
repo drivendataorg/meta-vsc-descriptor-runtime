@@ -31,8 +31,8 @@ def main(args: Namespace):
     dataset_folder = competition_data_dir / args.dataset
     query_video_dir = dataset_folder / "query"
 
-    query_metadata = dataset_folder / "query_metadata.csv"
-    reference_metadata = dataset_folder / "reference_metadata.csv"
+    query_metadata = dataset_folder / f"{dataset_folder}_query_metadata.csv"
+    reference_metadata = dataset_folder / f"{dataset_folder}_reference_metadata.csv"
 
     for file in [
         competition_data_dir,
@@ -64,8 +64,8 @@ def main(args: Namespace):
             query_video_dir / f"{query_id}.mp4",
             QUERY_SUBSET_DIR / f"{query_id}.mp4",
         )
-    copyfile(query_metadata, RUNTIME_DATA_DIR / query_metadata.name)
-    copyfile(reference_metadata, RUNTIME_DATA_DIR / reference_metadata.name)
+    copyfile(query_metadata, RUNTIME_DATA_DIR / "query_metadata.csv")
+    copyfile(reference_metadata, RUNTIME_DATA_DIR / "reference_metadata.csv")
 
     if args.dataset == "train":
         train_ground_truth = dataset_folder / "descriptor_ground_truth.csv"
