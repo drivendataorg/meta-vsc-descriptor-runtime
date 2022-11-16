@@ -43,14 +43,14 @@ exit_code=0
             echo "... finished"
 
             else
-                echo "WARNING: Could not find generated subset_query_descriptors.npz or find reference_descriptors.npz in submission.zip"
-                echo "query_id,ref_id,score" >> subset_rankings.csv
+                echo "ERROR: Could not find generated subset_query_descriptors.npz or reference_descriptors.npz in submission.zip"
+                exit 1
         fi
 	    echo "... finished"
 
         else
             echo "WARNING: Could not find main.py in submission.zip"
-            echo "query_id,reference_id,score" >> subset_rankings.csv
+            touch subset_rankings.csv
     fi
 
     # Generate full rankings from submitted descriptors via a similarity search
