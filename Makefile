@@ -139,7 +139,7 @@ data-test-subset: _clean_data_folder
 	python scripts/generate_data_subset.py --dataset test --subset_proportion ${SUBSET_PROPORTION}
 
 _clean_data_folder: 
-	rm -f data/*.csv data/queries/*.mp4
+	rm -f data/*.csv data/query/*.mp4
 
 
 ## Delete temporary Python cache and bytecode files

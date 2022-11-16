@@ -22,7 +22,7 @@ parser.add_argument(
 )
 
 RUNTIME_DATA_DIR = Path(__file__).parent.parent / "data"
-QUERY_SUBSET_DIR = RUNTIME_DATA_DIR / "queries"
+QUERY_SUBSET_DIR = RUNTIME_DATA_DIR / "query"
 
 
 def main(args: Namespace):
