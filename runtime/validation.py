@@ -2,7 +2,6 @@
 """
 Descriptor Track validation script
 """
-import logging
 from argparse import ArgumentParser, Namespace
 
 import numpy as np
@@ -34,16 +33,6 @@ parser.add_argument(
     required=True,
 )
 parser.add_argument("--subset", help="Path containing query subset ids", type=str)
-
-
-logging.basicConfig(
-    format="%(asctime)s %(levelname)-8s %(message)s",
-    level=logging.INFO,
-    datefmt="%Y-%m-%d %H:%M:%S",
-)
-logger = logging.getLogger("descriptor_eval_lib.py")
-logger.setLevel(logging.INFO)
-
 
 class DataValidationError(AssertionError):
     pass
