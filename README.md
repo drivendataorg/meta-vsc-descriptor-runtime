@@ -301,7 +301,7 @@ Available commands:
 
 build               Builds the container locally
 clean               Delete temporary Python cache and bytecode files
-data-subset    Adds video metadata and a subset of query videos to `data`. Defaults to test set. Can use train set with DATASET=train.
+data-subset         Adds video metadata and a subset of query videos to `data`. Defaults to test set. Can use train set with DATASET=train.
 interact-container  Start your locally built container and open a bash shell within the running container; same as submission setup except has network access
 pack-quickstart     Creates a submission/submission.zip file from the source code in submission_quickstart
 pack-submission     Creates a submission/submission.zip file from the source code in submission_src

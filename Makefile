@@ -106,7 +106,7 @@ endif
 	cd submission_src; zip -r ../submission/submission.zip ./*
 
 
-## Runs container using code from `submission/submission.zip` and data from `data/`
+## Runs container using code from `submission/submission.zip` and data from `data/test`. Can use `data/train` with DATASET=train.
 test-submission: _submission_write_perms
 # if submission file does not exist
 ifeq (,$(wildcard ./submission/submission.zip))
@@ -132,7 +132,7 @@ endif
 		${SUBMISSION_IMAGE}
 
 
-## Adds video metadata, ground truth, and a subset of training query videos to `data`
+## Adds video metadata and a subset of query videos to `data`. Defaults to test set. Can use train set with DATASET=train.
 data-subset: _clean_subset_data
 	python scripts/generate_data_subset.py --dataset ${DATASET} --subset_proportion ${SUBSET_PROPORTION}
 
