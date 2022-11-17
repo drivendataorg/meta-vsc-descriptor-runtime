@@ -1,4 +1,4 @@
-.PHONY: build pull pack-submission test-submission update-submodules data-train-subset data-test-subset
+.PHONY: build pull pack-submission test-submission update-submodules data-subset
 # ================================================================================================
 # Settings
 # ================================================================================================
@@ -26,6 +26,7 @@ REGISTRY_IMAGE = metavsc.azurecr.io/${REPO}:${TAG}
 LOCAL_IMAGE = ${REPO}:${LOCAL_TAG}
 CONTAINER_NAME = competition-meta-vsc
 
+DATASET?=test
 SUBSET_PROPORTION?=0.01
 
 # if not TTY (for example GithubActions CI) no interactive tty commands for docker
@@ -76,7 +77,7 @@ test-container: build _submission_write_perms
 ## Start your locally built container and open a bash shell within the running container; same as submission setup except has network access
 interact-container: build _submission_write_perms
 	docker run ${GPU_ARGS}\
-		--mount type=bind,source="$(shell pwd)"/data,target=/data,readonly \
+		--mount type=bind,source="$(shell pwd)"/data/${DATASET},target=/data,readonly \
 		--mount type=bind,source="$(shell pwd)"/submission,target=/code_execution/submission \
 		--shm-size 8g \
 		-it \
@@ -123,23 +124,21 @@ endif
 		${GPU_ARGS} \
 		${NETWORK_ARGS} \
 		--network none \
-		--mount type=bind,source="$(shell pwd)"/data,target=/data,readonly \
+		--mount type=bind,source="$(shell pwd)"/data/${DATASET},target=/data,readonly \
 		--mount type=bind,source="$(shell pwd)"/submission,target=/code_execution/submission \
 		--shm-size 8g \
 		--name ${CONTAINER_NAME} \
 		--rm \
 		${SUBMISSION_IMAGE}
 
-## Adds training set video metadata, ground truth, and a subset of training query videos to `data`
-data-train-subset: _clean_data_folder
-	python scripts/generate_data_subset.py --dataset train --subset_proportion ${SUBSET_PROPORTION}
 
-## Adds test set video metadata and a subset of test set query videos to `data`
-data-test-subset: _clean_data_folder
-	python scripts/generate_data_subset.py --dataset test --subset_proportion ${SUBSET_PROPORTION}
+## Adds video metadata, ground truth, and a subset of training query videos to `data`
+data-subset: _clean_subset_data
+	python scripts/generate_data_subset.py --dataset ${DATASET} --subset_proportion ${SUBSET_PROPORTION}
 
-_clean_data_folder: 
-	rm -f data/*.csv data/query/*.mp4
+
+_clean_subset_data:
+	rm -f data/${DATASET}/query_subset.csv data/${DATASET}/subset_ground_truth.csv data/query/*.mp4
 
 
 ## Delete temporary Python cache and bytecode files

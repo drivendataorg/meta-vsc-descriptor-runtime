@@ -6,7 +6,7 @@ import pandas as pd
 QUICKSTART_DIRECTORY = Path(__file__).parent.parent / "submission_quickstart"
 QUERY_OUTPUT_FILE = QUICKSTART_DIRECTORY / "query_descriptors.npz"
 REFERENCE_OUTPUT_FILE = QUICKSTART_DIRECTORY / "reference_descriptors.npz"
-DATA_DIRECTORY = QUICKSTART_DIRECTORY.parent / "data"
+DATA_DIRECTORY = QUICKSTART_DIRECTORY.parent / "data" / "test"
 QUERY_METADATA_PATH = DATA_DIRECTORY / "query_metadata.csv"
 REFERENCE_METADATA_PATH = DATA_DIRECTORY / "reference_metadata.csv"
 
