@@ -22,8 +22,6 @@ def generate_query_descriptors(subset_video_ids) -> np.ndarray:
 
     # Generate random descriptors for each video
     for video_id in subset_video_ids:
-        # TODO: limit number of descriptors by video length, either
-        # from reading in video or checking metadata file
         n_descriptors = rng.randint(low=5, high=15)
         descriptors.append(rng.standard_normal(size=(n_descriptors, n_dim)))
 
