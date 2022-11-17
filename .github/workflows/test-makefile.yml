@@ -1,4 +1,3 @@
-
 name: Test Makefile
 
 on:
@@ -12,8 +11,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: ['ubuntu-latest']
-        proc: ['cpu']
+        os: ["ubuntu-latest"]
+        proc: ["cpu"]
     env:
       SHA_TAG: ${{ matrix.proc }}-${{ github.sha }}
       LATEST_TAG: ${{ matrix.proc }}-latest
@@ -23,10 +22,13 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
         with:
-          python-version: '3.9'
-          cache: 'pip'
+          python-version: "3.9"
+          cache: "pip"
       - name: Install requirements
         run: pip install -r requirements.txt
+
+      - name: Prep test assets
+        run: cp .github/test_assets/*.csv data/test/
 
       - name: Test zipping submission_quickstart
         run: |
