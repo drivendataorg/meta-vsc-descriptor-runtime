@@ -21,13 +21,12 @@ parser.add_argument(
     choices=["train", "test", "phase2"],
 )
 
-RUNTIME_DATA_DIR = Path(__file__).parent.parent / "data"
-QUERY_SUBSET_DIR = RUNTIME_DATA_DIR / "query"
-
 
 def main(args: Namespace):
     # Ensure that data has been downloaded to the correct place
     competition_data_dir = Path("competition_data")
+    runtime_data_dir = Path(__file__).parent.parent / "data" / args.dataset
+    query_subset_dir = runtime_data_dir / "query"
     dataset_folder = competition_data_dir / args.dataset
     query_video_dir = dataset_folder / "query"
 
@@ -57,23 +56,23 @@ def main(args: Namespace):
     # Copy metadata files and chosen videoss
 
     subset_query_ids.sort_values().to_csv(
-        RUNTIME_DATA_DIR / "query_subset.csv", index=False
+        runtime_data_dir / "query_subset.csv", index=False
     )
     for query_id in subset_query_ids:
         copyfile(
             query_video_dir / f"{query_id}.mp4",
-            QUERY_SUBSET_DIR / f"{query_id}.mp4",
+            query_subset_dir / f"{query_id}.mp4",
         )
-    copyfile(query_metadata, RUNTIME_DATA_DIR / "query_metadata.csv")
-    copyfile(reference_metadata, RUNTIME_DATA_DIR / "reference_metadata.csv")
+    copyfile(query_metadata, runtime_data_dir / "query_metadata.csv")
+    copyfile(reference_metadata, runtime_data_dir / "reference_metadata.csv")
 
     if args.dataset == "train":
         train_ground_truth = dataset_folder / "train_descriptor_ground_truth.csv"
-        copyfile(train_ground_truth, RUNTIME_DATA_DIR / train_ground_truth.name)
+        copyfile(train_ground_truth, runtime_data_dir / train_ground_truth.name)
         ground_truth_subset_df = pd.read_csv(train_ground_truth).set_index("query_id")
         ground_truth_subset_df.loc[
             ground_truth_subset_df.index.isin(subset_query_ids)
-        ].to_csv(RUNTIME_DATA_DIR / "subset_ground_truth.csv")
+        ].to_csv(runtime_data_dir / "subset_ground_truth.csv")
 
 
 if __name__ == "__main__":
