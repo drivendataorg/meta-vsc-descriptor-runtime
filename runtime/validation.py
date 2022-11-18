@@ -63,7 +63,7 @@ def validate_lengths(dataset: str, features_npz):
     n_features = len(features_npz["features"])
     if not (n_video_ids == n_timestamps == n_features):
         raise DataValidationError(
-            f"Arrays lengths in {dataset} to not match. "
+            f"Arrays lengths for {dataset} do not match. "
             f"video_ids: {n_video_ids}; "
             f"timestamps: {n_timestamps}; "
             f"features: {n_features}. "
