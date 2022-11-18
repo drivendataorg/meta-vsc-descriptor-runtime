@@ -14,7 +14,22 @@ exit_code=0
     unzip ./submission/submission.zip -d ./
     ls -alh
 
-    # Use submitted code to generate descriptors on a subset of query videos 
+    # Validate submitted full descriptors
+    if [[ -f "query_descriptors.npz" && -f "reference_descriptors.npz" ]]
+    then
+        echo "Validating submission..."
+        conda run --no-capture-output -n condaenv \
+            python /opt/validation.py \
+            --query_features query_descriptors.npz \
+            --ref_features reference_descriptors.npz \
+            --query_metadata /data/query_metadata.csv \
+            --ref_metadata /data/reference_metadata.csv
+    else
+        echo "ERROR: Could not find query_descriptors.npz or reference_descriptors.npz in submission.zip"
+        exit_code=1
+    fi
+
+    # Use submitted code to generate descriptors on a subset of query videos
     if [ -f "main.py" ]
     then
         echo "Generating descriptors on a subset of query videos..."
@@ -42,9 +57,9 @@ exit_code=0
                 --candidates_output subset_rankings.csv
             echo "... finished"
 
-            else
-                echo "ERROR: Could not find generated subset_query_descriptors.npz or reference_descriptors.npz in submission.zip"
-                exit 1
+        else
+            echo "ERROR: Could not find generated subset_query_descriptors.npz or reference_descriptors.npz in submission.zip"
+            exit 1
         fi
 	    echo "... finished"
 
@@ -54,27 +69,13 @@ exit_code=0
     fi
 
     # Generate full rankings from submitted descriptors via a similarity search
-    if [[ -f "query_descriptors.npz" && -f "reference_descriptors.npz" ]]
-    then
-        echo "Validating submission..."
-        conda run --no-capture-output -n condaenv \
-            python /opt/validation.py \
-            --query_features query_descriptors.npz \
-            --ref_features reference_descriptors.npz \
-            --query_metadata /data/query_metadata.csv \
-            --ref_metadata /data/reference_metadata.csv
-
-        echo "Running similarity search to generate rankings for scoring..."
-        conda run --no-capture-output -n condaenv \
-            python /opt/descriptor_eval.py \
-            --query_features query_descriptors.npz \
-            --ref_features reference_descriptors.npz \
-            --candidates_output full_rankings.csv
-	    echo "... finished"
-        else
-            echo "ERROR: Could not find query_descriptors.npz or reference_descriptors.npz in submission.zip"
-            exit_code=1
-    fi
+    echo "Running similarity search to generate rankings for scoring..."
+    conda run --no-capture-output -n condaenv \
+        python /opt/descriptor_eval.py \
+        --query_features query_descriptors.npz \
+        --ref_features reference_descriptors.npz \
+        --candidates_output full_rankings.csv
+    echo "... finished"
 
     # Tar the full ranking csv and the subset ranking csv together to form the submission file
     tar -czvf /code_execution/submission/submission.tar.gz \

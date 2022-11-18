@@ -49,6 +49,35 @@ class DataValidationError(AssertionError):
     pass
 
 
+def validate_total_descriptors(dataset: str, n_features: int, total_seconds: float):
+    if n_features > total_seconds:
+        raise DataValidationError(
+            f"Number of {dataset} video features must not exceed one feature per second. "
+            f"Saw {n_features} vectors, max allowed is {query_total_seconds}"
+        )
+
+
+def validate_lengths(dataset: str, features_npz):
+    n_video_ids = len(features_npz["video_ids"])
+    n_timestamps = len(features_npz["timestamps"])
+    n_features = len(features_npz["features"])
+    if not (n_video_ids == n_timestamps == n_features):
+        raise DataValidationError(
+            f"Arrays lengths in {dataset} to not match. "
+            f"video_ids: {n_video_ids}; "
+            f"timestamps: {n_timestamps}; "
+            f"features: {n_features}. "
+        )
+
+
+def validate_descriptor_dtype(dataset: str, features_array: np.ndarray):
+    if features_array.dtype != np.float32:
+        raise DataValidationError(
+            f"Features array for {dataset} is not float32. "
+            f"dtype is: {features_array.dtype}"
+        )
+
+
 def main(args: Namespace):
     query_features = np.load(args.query_features, allow_pickle=False)
     ref_features = np.load(args.ref_features, allow_pickle=False)
@@ -60,15 +89,18 @@ def main(args: Namespace):
     query_total_seconds = query_meta.duration_sec.apply(np.ceil).sum()
     ref_total_seconds = ref_meta.duration_sec.apply(np.ceil).sum()
 
-    def validate_shape(dataset: str, n_features: int, total_seconds: float):
-        if n_features > total_seconds:
-            raise DataValidationError(
-                f"Error: Number of {dataset} video features must not exceed one feature per second. "
-                f"Saw {n_features} vectors, max allowed is {query_total_seconds}"
-            )
+    validate_total_descriptors(
+        "query", query_features["features"].shape[0], query_total_seconds
+    )
+    validate_total_descriptors(
+        "reference", ref_features["features"].shape[0], ref_total_seconds
+    )
 
-    validate_shape("query", query_features["features"].shape[0], query_total_seconds)
-    validate_shape("reference", ref_features["features"].shape[0], ref_total_seconds)
+    validate_lengths("query", query_features)
+    validate_lengths("reference", ref_features)
+
+    validate_descriptor_dtype("query", query_features["features"])
+    validate_descriptor_dtype("reference", ref_features["features"])
 
 
 if __name__ == "__main__":

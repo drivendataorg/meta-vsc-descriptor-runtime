@@ -22,7 +22,7 @@ def generate_query_descriptors(query_video_ids) -> np.ndarray:
 def main():
     # Loading subset of query images
     query_subset = pd.read_csv(DATA_DIRECTORY / "query_subset.csv")
-    query_subset_video_ids = query_subset.video_id.values
+    query_subset_video_ids = query_subset.video_id.values.astype("U")
 
     # Generation of query descriptors happens here #
     query_descriptors, query_video_ids, query_timestamps = generate_query_descriptors(
