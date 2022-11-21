@@ -53,7 +53,7 @@ def validate_total_descriptors(dataset: str, n_features: int, total_seconds: flo
     if n_features > total_seconds:
         raise DataValidationError(
             f"Number of {dataset} video features must not exceed one feature per second. "
-            f"Saw {n_features} vectors, max allowed is {query_total_seconds}"
+            f"Saw {n_features} vectors, max allowed is {total_seconds}"
         )
 
 
