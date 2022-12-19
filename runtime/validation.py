@@ -77,6 +77,20 @@ def validate_descriptor_dtype(dataset: str, features_array: np.ndarray):
             f"dtype is: {features_array.dtype}"
         )
 
+def validate_descriptor_dim(dataset: str, features_array: np.ndarray, max_dim: int = 512):
+    if (submitted_dim := features_array.shape[1])  > max_dim:
+        raise DataValidationError(
+          f"Features array for {dataset} exceeds max dim of {max_dim}: "
+          f"submitted dim is {submitted_dim}."
+        )
+
+def validate_sorted_ids(dataset: str, video_ids: np.array):
+    if not np.all(video_ids[:-1] <= video_ids[1:]):
+        indices = np.argwhere(video_ids[:-1] > video_ids[1:])
+        raise DataValidationError(
+            f"Video ids not sorted at index {indices[0]}."
+        )
+
 
 def main(args: Namespace):
     query_features = np.load(args.query_features, allow_pickle=False)
@@ -99,9 +113,14 @@ def main(args: Namespace):
     validate_lengths("query", query_features)
     validate_lengths("reference", ref_features)
 
+    validate_sorted_ids("query", query_features['video_ids'])
+    validate_sorted_ids("reference", ref_features['video_ids'])
+
     validate_descriptor_dtype("query", query_features["features"])
     validate_descriptor_dtype("reference", ref_features["features"])
 
+    validate_descriptor_dim("query", query_features["features"], max_dim=512)
+    validate_descriptor_dim("reference", ref_features["features"], max_dim=512)
 
 if __name__ == "__main__":
     args = parser.parse_args()
