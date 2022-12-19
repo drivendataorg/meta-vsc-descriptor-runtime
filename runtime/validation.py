@@ -85,8 +85,9 @@ def validate_descriptor_dim(dataset: str, features_array: np.ndarray, max_dim: i
         )
 
 def validate_sorted_ids(dataset: str, video_ids: np.array):
-    if not np.all(video_ids[:-1] <= video_ids[1:]):
-        indices = np.argwhere(video_ids[:-1] > video_ids[1:])
+    is_sorted = video_ids[:-1] <= video_ids[1:]
+    if not np.all(is_sorted):
+        indices = np.argwhere(~is_sorted)
         raise DataValidationError(
             f"Video ids not sorted at index {indices[0]}."
         )
