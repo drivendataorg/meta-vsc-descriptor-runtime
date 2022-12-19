@@ -78,7 +78,7 @@ def validate_descriptor_dtype(dataset: str, features_array: np.ndarray):
         )
 
 def validate_descriptor_dim(dataset: str, features_array: np.ndarray, max_dim: int = 512):
-    if (submitted_dim := features_array.shape[1])  > max_dim:
+    if (submitted_dim := features_array.shape[1]) > max_dim:
         raise DataValidationError(
           f"Features array for {dataset} exceeds max dim of {max_dim}: "
           f"submitted dim is {submitted_dim}."
