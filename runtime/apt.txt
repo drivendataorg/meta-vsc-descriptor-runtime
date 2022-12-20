@@ -1,4 +1,5 @@
 git
 libsm6
 libxext6
+libtiff5
 build-essential
