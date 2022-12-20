@@ -10,6 +10,7 @@ dependencies:
   - ffmpeg-python=0.2.0
   - h5py=3.7.0
   - loguru=0.6.0
+  - libtiff=4.5.0
   - matplotlib=3.6.2
   - networkx=2.8.8
   - numba=0.56.3
