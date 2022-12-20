@@ -20,12 +20,12 @@ jobs:
       IMAGE: meta-vsc-descriptor-runtime
       SHA_TAG: ${{ matrix.proc }}-${{ github.sha }}
       LATEST_TAG: ${{ matrix.proc }}-latest
+      GITHUB_ACTIONS_NO_TTY: true
 
     steps:
       - uses: actions/checkout@v3
         with:
           submodules: true
-          ssh-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
       - name: Build Image
         run: |
@@ -41,8 +41,7 @@ jobs:
 
       - name: Tests packages in container
         run: |
-          docker run $LOGIN_SERVER/$IMAGE:$SHA_TAG /bin/bash \
-            -c "conda run --no-capture-output -n condaenv pytest tests/test_packages.py"
+          make LOCAL_IMAGE=$LOGIN_SERVER/$IMAGE:$SHA_TAG test-container
 
       - uses: actions/setup-python@v4
         with:
@@ -60,7 +59,7 @@ jobs:
 
       - name: Run submission in container
         run: |
-          make GITHUB_ACTIONS_NO_TTY=true test-submission
+          make SUBMISSION_IMAGE=$LOGIN_SERVER/$IMAGE:$SHA_TAG test-submission
 
       - name: Log into Azure
         if: github.ref == 'refs/heads/main'

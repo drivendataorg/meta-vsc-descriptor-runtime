@@ -25,6 +25,7 @@ REPO = meta-vsc-descriptor-runtime
 REGISTRY_IMAGE = metavsc.azurecr.io/${REPO}:${TAG}
 LOCAL_IMAGE = ${REPO}:${LOCAL_TAG}
 CONTAINER_NAME = competition-meta-vsc
+BLOCK_INTERNET = true
 
 DATASET?=test
 SUBSET_PROPORTION?=0.01
@@ -123,7 +124,6 @@ endif
 		${TTY_ARGS} \
 		${GPU_ARGS} \
 		${NETWORK_ARGS} \
-		--network none \
 		--mount type=bind,source="$(shell pwd)"/data/${DATASET},target=/data,readonly \
 		--mount type=bind,source="$(shell pwd)"/submission,target=/code_execution/submission \
 		--shm-size 8g \
