@@ -44,6 +44,24 @@ jobs:
           docker run $LOGIN_SERVER/$IMAGE:$SHA_TAG /bin/bash \
             -c "conda run --no-capture-output -n condaenv pytest tests/test_packages.py"
 
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.9"
+          cache: "pip"
+      - name: Install requirements
+        run: pip install -r requirements.txt
+
+      - name: Prep test assets
+        run: cp .github/test_assets/*.csv data/test/
+
+      - name: Test zipping submission_quickstart
+        run: |
+          make pack-quickstart
+
+      - name: Run submission in container
+        run: |
+          make test-submission
+
       - name: Log into Azure
         if: github.ref == 'refs/heads/main'
         uses: azure/login@v1
