@@ -14,7 +14,7 @@ jobs:
     strategy:
       matrix:
         os: ['ubuntu-latest']
-        proc: ['gpu']
+        proc: ['cpu', 'gpu']
     env:
       LOGIN_SERVER: metavsc.azurecr.io
       IMAGE: meta-vsc-descriptor-runtime
@@ -51,20 +51,20 @@ jobs:
           cache: "pip"
 
       - name: Install requirements
-        if: ${{ matrix.proc }} == 'cpu'
+        if: ${{ matrix.proc == 'cpu' }}
         run: pip install -r requirements.txt
 
       - name: Prep test assets
-        if: ${{ matrix.proc }} == 'cpu'
+        if: ${{ matrix.proc == 'cpu' }}
         run: cp .github/test_assets/*.csv data/test/
 
       - name: Test zipping submission_quickstart
-        if: ${{ matrix.proc }} == 'cpu'
+        if: ${{ matrix.proc == 'cpu' }}
         run: |
           make pack-quickstart
 
       - name: Run submission in container
-        if: ${{ matrix.proc }} == 'cpu'
+        if: ${{ matrix.proc == 'cpu' }}
         run: |
           make CPU_OR_GPU=${{ matrix.proc }} \
             SUBMISSION_IMAGE=$LOGIN_SERVER/$IMAGE:$SHA_TAG \
