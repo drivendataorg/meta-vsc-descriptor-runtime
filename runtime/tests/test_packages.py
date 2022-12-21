@@ -19,6 +19,8 @@ packages = [
     "torch",  # pytorch
     "faiss",
     "augly",
+    "PIL",
+    "PIL.Image",
 ]
 
 
