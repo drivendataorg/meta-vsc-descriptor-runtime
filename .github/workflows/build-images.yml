@@ -14,7 +14,7 @@ jobs:
     strategy:
       matrix:
         os: ['ubuntu-latest']
-        proc: ['cpu', 'gpu']
+        proc: ['gpu']
     env:
       LOGIN_SERVER: metavsc.azurecr.io
       IMAGE: meta-vsc-descriptor-runtime
@@ -41,7 +41,9 @@ jobs:
 
       - name: Tests packages in container
         run: |
-          make LOCAL_IMAGE=$LOGIN_SERVER/$IMAGE:$SHA_TAG test-container
+          make CPU_OR_GPU=${{ matrix.proc }} \
+            LOCAL_IMAGE=$LOGIN_SERVER/$IMAGE:$SHA_TAG \
+            test-container
 
       - uses: actions/setup-python@v4
         with:
@@ -59,7 +61,9 @@ jobs:
 
       - name: Run submission in container
         run: |
-          make SUBMISSION_IMAGE=$LOGIN_SERVER/$IMAGE:$SHA_TAG test-submission
+          make CPU_OR_GPU=${{ matrix.proc }} \
+            SUBMISSION_IMAGE=$LOGIN_SERVER/$IMAGE:$SHA_TAG \
+            test-submission
 
       - name: Log into Azure
         if: github.ref == 'refs/heads/main'
