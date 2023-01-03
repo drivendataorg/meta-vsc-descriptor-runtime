@@ -2,6 +2,7 @@
 from argparse import ArgumentParser, Namespace
 from pathlib import Path
 from shutil import copyfile, move
+import os
 
 import numpy as np
 import pandas as pd
@@ -46,9 +47,15 @@ def main(args: Namespace):
 
     p_subset = args.subset_proportion
 
+    # Get a list of actually downloaded videos in system
+    video_ids = os.listdir(query_video_dir)
+    video_ids = [elem.replace('.mp4', '') for elem in video_ids]
+    
+    query_metadata_df = pd.read_csv(query_metadata)
+    # Filter out the listed video_ids that are not in the system
+    query_metadata_df = query_metadata_df[query_metadata_df['video_id'].isin(video_ids)]
     # Choose a random subset of query IDs to include
     rng = np.random.RandomState(42)
-    query_metadata_df = pd.read_csv(query_metadata)
     subset_query_ids = query_metadata_df.video_id.sample(
         int(np.ceil(query_metadata_df.shape[0] * p_subset)), random_state=rng
     )
