@@ -3,6 +3,7 @@ channels:
   - conda-forge
   - defaults
 dependencies:
+  - av=9.2.0
   - cpuonly=2.0
   - cython=0.29.32
   - faiss-cpu=1.7.2
@@ -34,5 +35,10 @@ dependencies:
   - tslearn=0.5.2
   - pip: 
     - augly[image,video]==1.0.0
+    - decord==0.6.0
     - lightning-flash[video,image]==0.8.1
+    - pytorch-lightning==1.8.6
+    - pytorchvideo==0.1.5
     - tensorflow-cpu==2.9.1
+    - timm==0.6.12
+    - transformers==4.25.1
