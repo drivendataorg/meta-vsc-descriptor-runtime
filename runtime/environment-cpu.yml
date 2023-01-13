@@ -39,6 +39,7 @@ dependencies:
     - lightning-flash[video,image]==0.8.1
     - pytorch-lightning==1.8.6
     - pytorchvideo==0.1.2
+    - segmentation-models-pytorch==0.3.2
     - tensorflow-cpu==2.9.1
     - timm==0.6.12
     - transformers==4.25.1
