@@ -26,7 +26,7 @@ exit_code=0
             --ref_metadata /data/reference_metadata.csv
     else
         echo "ERROR: Could not find query_descriptors.npz or reference_descriptors.npz in submission.zip"
-        exit_code=1
+        exit 1
     fi
 
     # Use submitted code to generate descriptors on a subset of query videos
