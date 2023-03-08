@@ -33,8 +33,11 @@ exit_code=0
     if [ -f "main.py" ]
     then
         echo "Generating descriptors on a subset of query videos..."
+        echo "Started at $(date +%s)"
 
         conda run --no-capture-output -n condaenv python main.py
+
+        echo "Finished at $(date +%s)
 
         # If code successfully generates subset of descriptors, run similarity search
         # to generate similarity rankings
