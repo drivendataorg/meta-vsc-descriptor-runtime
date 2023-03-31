@@ -66,9 +66,16 @@ exit_code=0
         fi
 	    echo "... finished"
 
+    else
+        echo $PHASE2
+        if [ "$PHASE2" == "true" ]
+        then
+            echo "ERROR: Non-code execution submissions are not allowed in Phase 2"
+            exit 1
         else
             echo "WARNING: Could not find main.py in submission.zip"
             touch subset_rankings.csv
+        fi
     fi
 
     # Generate full rankings from submitted descriptors via a similarity search
